@@ -9,7 +9,6 @@ function draw() {
 
 // Ephram and Joesph
 
-// why are there three separate projects instead of just one with multiple different javascript files imported?
 
 // yet to be implemented. takes a position, returns the nearest car
 // object, whatever that looks like.
