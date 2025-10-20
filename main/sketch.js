@@ -8,7 +8,7 @@ function preload() {
 
   import("./cars/basic_car.js").then(m => {
     Car = m.Car;
-  })
+  });
 }
 
 let towers = [];
@@ -27,7 +27,7 @@ function setup() {
 
   //fake path
   let fakePath = [
-    createVector(100, 200)
+    createVector(100, 200),
     //add more vectrors to sim real path
   ];
 
