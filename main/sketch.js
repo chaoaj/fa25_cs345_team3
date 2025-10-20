@@ -1,21 +1,11 @@
-// Javascript is weird about modules sometimes? This works tho
-var BasicTower;
-var Car;
-function preload() {
-  import("./towers/basic_tower.js").then(m => {
-    BasicTower = m;
-  });
-
-  import("./cars/basic_car.js").then(m => {
-    Car = m.Car;
-  });
-}
+import * as BasicTower from "./towers/basic_tower.js";
+import { Car } from "./cars/basic_car.js";
 
 let towers = [];
 let testCar;
 
 
-function setup() {
+export function setup() {
   createCanvas(400, 400);
 
   // Test tower
@@ -32,11 +22,9 @@ function setup() {
   ];
 
   testCar = new Car(fakePath);
-
-
 }
 
-function draw() {
+export function draw() {
   background(220);
   for (let tower of towers) {
     tower.update();
