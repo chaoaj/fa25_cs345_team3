@@ -21,10 +21,7 @@ function setup() {
   // Test tower
   const tower = new Tower(BasicTower.draw, BasicTower.update);
   tower.obj = {
-    position: {
-      x: 300,
-      y: 300,
-    },
+    position: createVector(300, 300),
   };
   towers.push(tower);
 

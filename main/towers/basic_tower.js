@@ -1,9 +1,6 @@
 // Cars aren't implemented yet, so this temporarily returns the mouse position
 function getNearestCar(x, y) {
-  return {
-    x: mouseX,
-    y: mouseY,
-  };
+  return createVector(mouseX, mouseY);
 }
 
 const bodyColor = [255, 0, 0];
