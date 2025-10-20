@@ -1,12 +1,19 @@
 // Javascript is weird about modules sometimes? This works tho
 var BasicTower;
+var Car;
 function preload() {
   import("./towers/basic_tower.js").then(m => {
     BasicTower = m;
   });
+
+  import("./cars/basic_car.js").then(m => {
+    Car = m.Car;
+  })
 }
 
 let towers = [];
+let testCar;
+
 
 function setup() {
   createCanvas(400, 400);
@@ -20,9 +27,17 @@ function setup() {
     },
   };
   towers.push(tower);
+
+  //fake path
+  let fakePath = [
+    createVector(100, 200)
+    //add more vectrors to sim real path
+  ];
+
+  testCar = new Car(fakePath);
+
+
 }
-
-
 
 function draw() {
   background(220);
@@ -32,7 +47,11 @@ function draw() {
   for (let tower of towers) {
     tower.draw();
   }
+
+  testCar.draw();
+
 }
+
 
 
 // Ephram and Joesph
@@ -41,7 +60,7 @@ function draw() {
 // yet to be implemented. takes a position, returns the nearest car
 // object, whatever that looks like.
 function getNearestCar(x, y) {
-  
+
 }
 // Tower constructor. could be called like new Tower(whatever)
 function Tower(draw, update) {
@@ -75,5 +94,5 @@ function Tower(draw, update) {
 
 // A function to place a tower at a position.
 function placeTower(tower, x, y) {
-  
+
 }
