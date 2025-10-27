@@ -32,10 +32,10 @@ export class Car {
         noStroke();
 
         fill(this.tireColor);
-        rect(-this.bodyWidth / 3, -this.bodyHieght, 2 - 1, 6, 2);
-        rect(this.bodyWidth / 3, -this.bodyHieght, 2 - 1, 6, 2);
-        rect(-this.bodyWidth / 3, this.bodyHieght, 2 - 1, 6, 2);
-        rect(this.bodyWidth / 3, this.bodyHieght, 2 - 1, 6, 2);
+        rect(-this.bodyWidth / 3, -this.bodyHeight, 2 - 1, 6, 2);
+        rect(this.bodyWidth / 3, -this.bodyHeight, 2 - 1, 6, 2);
+        rect(-this.bodyWidth / 3, this.bodyHeight, 2 - 1, 6, 2);
+        rect(this.bodyWidth / 3, this.bodyHeight, 2 - 1, 6, 2);
 
         fill(this.bodyColor);
         rect(0, 0, this.bodyWidth, this.bodyHeight, 3);
@@ -63,7 +63,7 @@ export class Car {
             return;
         }
 
-        let target = this.path[this.path.length]
+        let target = this.path[this.targetWaypointIndex]
         
         let direction = p5.Vector.sub(target, this.pos)
 
