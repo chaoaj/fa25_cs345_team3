@@ -51,20 +51,21 @@ export class Car {
 
     carIsDead(car) {
         return this.currenthealth <= 0;
+
     }
 
     update() {
         if (this.isFinished) {
             return;
         }
-        
+
         if (this.targetWaypointIndex >= this.path.length) {
             this.isFinished = true;
             return;
         }
 
         let target = this.path[this.targetWaypointIndex]
-        
+
         let direction = p5.Vector.sub(target, this.pos)
 
         if (direction.mag() < this.speed) {

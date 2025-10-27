@@ -2,6 +2,7 @@ import * as BasicTower from "./towers/basic_tower.js";
 import { Car } from "./cars/basic_car.js";
 
 let towers = [];
+let cars = [];
 let testCar;
 
 
@@ -24,6 +25,7 @@ export function setup() {
   ];
 
   testCar = new Car(fakePath);
+  cars.push(testCar);
 }
 
 export function draw() {

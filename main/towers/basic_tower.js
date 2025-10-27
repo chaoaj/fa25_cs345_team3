@@ -1,6 +1,8 @@
+import { cars } from "../sketch.js";
+
 // Cars aren't implemented yet, so this temporarily returns the mouse position
-function getNearestCar(x, y) {
-  return createVector(mouseX, mouseY);
+export function getFirstCar(x, y) {
+  return cars[0].pos;
 }
 
 const bodyColor = [255, 0, 0];
