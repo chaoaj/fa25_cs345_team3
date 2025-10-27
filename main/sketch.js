@@ -18,6 +18,8 @@ export function setup() {
   //fake path
   let fakePath = [
     createVector(100, 200),
+    createVector(150, 250),
+    createVector(200, 250),
     //add more vectrors to sim real path
   ];
 
@@ -33,6 +35,7 @@ export function draw() {
     tower.draw();
   }
 
+  testCar.update();
   testCar.draw();
 
 }

@@ -53,5 +53,33 @@ export class Car {
         return this.currenthealth <= 0;
     }
 
+    update() {
+        if (this.isFinished) {
+            return;
+        }
+        
+        if (this.targetWaypointIndex >= this.path.length) {
+            this.isFinished = true;
+            return;
+        }
 
+        let target = this.path[this.path.length]
+        
+        let direction = p5.Vector.sub(target, this.pos)
+
+        if (direction.mag() < this.speed) {
+            this.pos = target.copy
+
+            this.targetWaypointIndex++;
+
+            if (this.targetWaypointIndex >= this.path.length) {
+                this.isFinished = true;
+            }
+        } else {
+            direction.normalize();
+            direction.mult(this.speed);
+            this.velocity = direction;
+            this.pos.add(this.velocity);
+        }
+    }
 }
