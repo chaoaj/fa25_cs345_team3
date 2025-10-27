@@ -1,3 +1,5 @@
+import { cars } from "../sketch.js";
+
 export class Car {
 
     constructor(path, speed = 2, health = 100) {
@@ -56,6 +58,11 @@ export class Car {
 
     update() {
         if (this.isFinished) {
+            return;
+        }
+
+        if (this.carIsDead(this)) {
+            cars.splice(cars.indexOf(this), 1);
             return;
         }
 
