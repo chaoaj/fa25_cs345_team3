@@ -61,7 +61,7 @@ export class Car {
       return;
     }
 
-    if (this.carIsDead(this)) {
+    if (this.carIsDead()) {
       cars.splice(cars.indexOf(this), 1);
       return;
     }
