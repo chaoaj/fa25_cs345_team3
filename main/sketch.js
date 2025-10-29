@@ -49,8 +49,8 @@ export function draw() {
 
 // yet to be implemented. takes a position, returns the nearest car
 // object, whatever that looks like.
-function getNearestCar(x, y) {
-
+export function getNearestCar(x, y) {
+  return cars[0].pos;
 }
 // Tower constructor. could be called like new Tower(whatever)
 function Tower(draw, update) {

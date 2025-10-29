@@ -1,4 +1,4 @@
-import { cars } from "../sketch.js";
+import { cars, getNearestCar } from "../sketch.js";
 
 // Cars aren't implemented yet, so this temporarily returns the mouse position
 export function getFirstCar(x, y) {
