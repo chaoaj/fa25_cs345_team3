@@ -9,15 +9,6 @@ let testCar;
 export function setup() {
   createCanvas(400, 400);
 
-  let map1 = [
-    noStroke(),
-    rect(-5, 100, 250, 45),
-    rect(205, 100, 45, 150),
-    rect(25, 205, 225, 45),
-    rect(25, 205, 45, 150),
-    rect(25, 310, 400, 45)
-
-  ]
   // Test tower
   const tower = new Tower(BasicTower.draw, BasicTower.update);
   tower.obj = {
@@ -39,6 +30,14 @@ export function setup() {
 
 export function draw() {
   background(220);
+  //map1
+  noStroke();
+  rect(-5, 100, 250, 45);
+  rect(205, 100, 45, 150);
+  rect(25, 205, 225, 45);
+  rect(25, 205, 45, 150);
+  rect(25, 310, 400, 45);
+  
   for (let tower of towers) {
     tower.update();
   }
