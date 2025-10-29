@@ -51,7 +51,7 @@ export class Car {
     this.currenthealth -= amount;
   }
 
-  carIsDead(car) {
+  carIsDead() {
     return this.currenthealth <= 0;
 
   }
