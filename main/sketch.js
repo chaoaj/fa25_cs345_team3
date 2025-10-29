@@ -2,7 +2,7 @@ import * as BasicTower from "./towers/basic_tower.js";
 import { Car } from "./cars/basic_car.js";
 
 let towers = [];
-let cars = [];
+export let cars = [];
 let testCar;
 
 
