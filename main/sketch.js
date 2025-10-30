@@ -18,13 +18,23 @@ export function setup() {
 
   //fake path
   let fakePath = [
+    createVector(0,0),
     createVector(100, 200),
     createVector(150, 250),
     createVector(200, 250),
     //add more vectrors to sim real path
   ];
 
-  testCar = new Car(fakePath);
+  let path1 = [
+    createVector(-11,125),
+    createVector(225,125),
+    createVector(225,225),
+    createVector(50,225),
+    createVector(50,330),
+    createVector(411,330),
+  ]
+
+  testCar = new Car(path1);
   cars.push(testCar);
 }
 
@@ -37,7 +47,7 @@ export function draw() {
   rect(25, 205, 225, 45);
   rect(25, 205, 45, 150);
   rect(25, 310, 400, 45);
-  
+
   for (let tower of towers) {
     tower.update();
   }
