@@ -2,7 +2,6 @@
 //import { cars } from "../sketch.js";
 
 export class Car {
-
   constructor(path, speed = 2, health = 100) {
     // returns object with all of cars data
 
@@ -20,10 +19,9 @@ export class Car {
     // Shape and appearances
     this.bodyWidth = 25;
     this.bodyHeight = 14;
-    this.bodyColor = color('red');
-    this.windowColor = color('grey');
-    this.tireColor = color('black');
-
+    this.bodyColor = color("red");
+    this.windowColor = color("grey");
+    this.tireColor = color("black");
   }
 
   draw() {
@@ -53,9 +51,8 @@ export class Car {
     this.currentHealth -= amount;
   }
 
-   carIsDead() {
+  carIsDead() {
     return this.currentHealth <= 0;
-
   }
 
   update() {
@@ -68,9 +65,9 @@ export class Car {
       return;
     }
 
-    let target = this.path[this.targetWaypointIndex]
+    let target = this.path[this.targetWaypointIndex];
 
-    let direction = p5.Vector.sub(target, this.pos)
+    let direction = p5.Vector.sub(target, this.pos);
 
     if (direction.mag() < this.speed) {
       this.pos = target.copy();
