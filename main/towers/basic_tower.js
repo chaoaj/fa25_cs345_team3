@@ -12,10 +12,12 @@ const turretColor = [200, 200, 200];
 const firingRange = 100;
 
 // this method should fire a projectile at the nearest/first car
-export function fire() {
-  proj = new basicTowerProjectile(this.pos);
+export function fire(pos) {
+  // This code isn't going to work, make a projectiles array in
+  // sketch.js or something, push to that, and call proj.draw in draw
+  let proj = new basicTowerProjectile(pos);
   proj.draw();
-  createVector(getFirstCar().x, getFirstCar().y);
+  getFirstCar().copy();
 }
 
 export function update() {
@@ -32,7 +34,7 @@ export function update() {
   if (enoughTimeElapsed && distanceToTarget < firingRange) {
     // TODO: Fire a projectile once those are implemented
     console.log("Fire!");
-    fire();
+    fire(this.obj.position);
   }
 }
 
