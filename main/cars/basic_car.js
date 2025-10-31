@@ -1,4 +1,5 @@
-import { cars } from "../sketch.js";
+//removed because circular dependency made game crash
+//import { cars } from "../sketch.js";
 
 export class Car {
 
@@ -10,11 +11,11 @@ export class Car {
     this.targetWaypointIndex = 1;
     this.speed = speed;
     this.velocity = createVector(0, 0);
-    this.isFInished = false;
+    this.isFinished = false;
 
-    // health tracking atributes
+    // health tracking attributes
     this.maxHealth = health;
-    this.currenthealth = health;
+    this.currentHealth = health;
 
     // Shape and appearances
     this.bodyWidth = 25;
@@ -33,11 +34,12 @@ export class Car {
     rectMode(CENTER);
     noStroke();
 
+    //Draws tires
     fill(this.tireColor);
-    rect(-this.bodyWidth / 3, -this.bodyHeight, 2 - 1, 6, 2);
-    rect(this.bodyWidth / 3, -this.bodyHeight, 2 - 1, 6, 2);
-    rect(-this.bodyWidth / 3, this.bodyHeight, 2 - 1, 6, 2);
-    rect(this.bodyWidth / 3, this.bodyHeight, 2 - 1, 6, 2);
+    rect(-this.bodyWidth / 3, -this.bodyHeight / 2 - 1, 6, 2); // Top-left
+    rect(this.bodyWidth / 3, -this.bodyHeight / 2 - 1, 6, 2); // Top-right
+    rect(-this.bodyWidth / 3, this.bodyHeight / 2 + 1, 6, 2); // Bottom-left
+    rect(this.bodyWidth / 3, this.bodyHeight / 2 + 1, 6, 2); // Bottom-right
 
     fill(this.bodyColor);
     rect(0, 0, this.bodyWidth, this.bodyHeight, 3);
@@ -48,21 +50,16 @@ export class Car {
   }
 
   takeDamage(amount) {
-    this.currenthealth -= amount;
+    this.currentHealth -= amount;
   }
 
-  carIsDead() {
-    return this.currenthealth <= 0;
+   carIsDead() {
+    return this.currentHealth <= 0;
 
   }
 
   update() {
-    if (this.isFinished) {
-      return;
-    }
-
-    if (this.carIsDead()) {
-      cars.splice(cars.indexOf(this), 1);
+    if (this.isFinished || this.carIsDead()) {
       return;
     }
 
