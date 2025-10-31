@@ -4,6 +4,11 @@ import { Car } from "./cars/basic_car.js";
 let towers = [];
 export let cars = [];
 let testCar;
+let path1;
+
+let carsPerLevel = 20; // # of cars for first level
+let carsSpawned = 0;
+let spawnTimer = 0; //Countdown time for next spawn
 
 
 export function setup() {
@@ -18,24 +23,25 @@ export function setup() {
 
   //fake path
   let fakePath = [
-    createVector(0,0),
+    createVector(0, 0),
     createVector(100, 200),
     createVector(150, 250),
     createVector(200, 250),
-    //add more vectrors to sim real path
+    //add more vectors to sim real path
   ];
 
-  let path1 = [
-    createVector(-11,125),
-    createVector(225,125),
-    createVector(225,225),
-    createVector(50,225),
-    createVector(50,330),
-    createVector(411,330),
+  path1 = [
+    createVector(-11, 125),
+    createVector(225, 125),
+    createVector(225, 225),
+    createVector(50, 225),
+    createVector(50, 330),
+    createVector(411, 330),
   ]
 
-  testCar = new Car(path1);
-  cars.push(testCar);
+  //testCar = new Car(path1);
+  //cars.push(testCar);
+  setNextSpawnTimer();
 }
 
 export function draw() {
@@ -55,9 +61,38 @@ export function draw() {
     tower.draw();
   }
 
-  testCar.update();
-  testCar.draw();
+  spawnTimer--;
+  if (spawnTimer <= 0 && carsSpawned < carsPerLevel) {
+    spawnCar();
+    carsSpawned++;
+    setNextSpawnTimer();
+  }
 
+  //testCar.update();
+  //testCar.draw();
+
+  for (let i = cars.length - 1; i >= 0; i--) {
+    let car = cars[i];
+    car.update();
+    car.draw();
+
+    //Remove car from array at death or end of map
+    if (car.isFinished || car.isDead()) {
+      cars.splice(i, 1);
+    }
+  }
+
+}
+
+export function spawnCar() {
+  //create new car with created path
+  let newCar = new Car(path1, random(1, 2.5), 100);
+  cars.push(newCar);
+}
+
+export function setNextSpawnTimer() {
+  //picks between 1 second at 2.5 seconds
+  spawnTimer = random(60, 150); //at 60 fps
 }
 
 
@@ -68,7 +103,12 @@ export function draw() {
 // yet to be implemented. takes a position, returns the nearest car
 // object, whatever that looks like.
 export function getNearestCar(x, y) {
-  return cars[0].pos;
+  if (cars.length > 0) {
+    return cars[0].pos; //targets car safer
+  }
+
+  //if no car is present, targets dummy pos (prevent crash)
+  return {x: Infinity, y: Infinity};
 }
 // Tower constructor. could be called like new Tower(whatever)
 function Tower(draw, update) {
