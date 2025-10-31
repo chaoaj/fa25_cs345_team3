@@ -53,13 +53,13 @@ export class Car {
     this.currentHealth -= amount;
   }
 
-   carIsDead() {
+   isDead() {
     return this.currentHealth <= 0;
 
   }
 
   update() {
-    if (this.isFinished || this.carIsDead()) {
+    if (this.isFinished || this.isDead()) {
       return;
     }
 
