@@ -16,15 +16,17 @@ export function setup() {
   };
   towers.push(tower);
 
-  //fake path
-  let fakePath = [
-    createVector(100, 200),
-    createVector(150, 250),
-    createVector(200, 250),
-    //add more vectrors to sim real path
+  // path the car will take throughout the map
+  let carPath = [
+    createVector(-5, 122.5),
+    createVector(227.5, 122.5),
+    createVector(227.5, 227.5),
+    createVector(47.5, 227.5),
+    createVector(47.5, 332.5),
+    createVector(420, 332.5),
   ];
 
-  testCar = new Car(fakePath);
+  testCar = new Car(carPath);
   cars.push(testCar);
 }
 
