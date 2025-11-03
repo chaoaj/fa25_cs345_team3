@@ -6,7 +6,7 @@ export class basicTowerProjectile {
 
     draw() {
         push()
-        ellipse(towerPos.x, towerPos.y, 10, 10);
+        ellipse(this.towerPos.x, this.towerPos.y, 10, 10);
         translate()
         pop()
     }

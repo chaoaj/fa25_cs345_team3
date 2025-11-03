@@ -3,6 +3,7 @@ import { Car } from "./cars/basic_car.js";
 
 let towers = [];
 export let cars = [];
+let projectiles = []
 let testCar;
 let path1;
 
