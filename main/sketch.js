@@ -3,6 +3,7 @@ import { Car } from "./cars/basic_car.js";
 
 let towers = [];
 export let cars = [];
+let projectiles = []
 let testCar;
 let path1;
 
@@ -10,9 +11,14 @@ let carsPerLevel = 20; // # of cars for first level
 let carsSpawned = 0;
 let spawnTimer = 0; //Countdown time for next spawn
 
+let mapImage;
+
+export function preload() {
+  mapImage = loadImage("./assets/board_demo.png");
+}
 
 export function setup() {
-  createCanvas(400, 400);
+  createCanvas(640, 480);
 
   // Test tower
   const tower = new Tower(BasicTower.draw, BasicTower.update);
@@ -21,38 +27,27 @@ export function setup() {
   };
   towers.push(tower);
 
-  //fake path
-  let fakePath = [
-    createVector(0, 0),
-    createVector(100, 200),
-    createVector(150, 250),
-    createVector(200, 250),
-    //add more vectors to sim real path
-  ];
-
   path1 = [
-    createVector(-11, 125),
-    createVector(225, 125),
-    createVector(225, 225),
-    createVector(50, 225),
-    createVector(50, 330),
-    createVector(411, 330),
+    createVector(-17.6, 150),
+    createVector(360, 150),
+    createVector(360, 270),
+    createVector(80, 270),
+    createVector(80, 396),
+    createVector(657.6, 396),
   ]
-
-  //testCar = new Car(path1);
-  //cars.push(testCar);
+  
   setNextSpawnTimer();
 }
 
 export function draw() {
   background(220);
-  //map1
+  image(mapImage, 0, 0);
   noStroke();
-  rect(-5, 100, 250, 45);
-  rect(205, 100, 45, 150);
-  rect(25, 205, 225, 45);
-  rect(25, 205, 45, 150);
-  rect(25, 310, 400, 45);
+  // rect(-5, 100, 250, 45);
+  // rect(205, 100, 45, 150);
+  // rect(25, 205, 225, 45);
+  // rect(25, 205, 45, 150);
+  // rect(25, 310, 400, 45);
 
   for (let tower of towers) {
     tower.update();
@@ -67,9 +62,6 @@ export function draw() {
     carsSpawned++;
     setNextSpawnTimer();
   }
-
-  //testCar.update();
-  //testCar.draw();
 
   for (let i = cars.length - 1; i >= 0; i--) {
     let car = cars[i];
@@ -95,14 +87,10 @@ export function setNextSpawnTimer() {
   spawnTimer = random(60, 150); //at 60 fps
 }
 
-
-
-// Ephram and Joesph
-
-
 // yet to be implemented. takes a position, returns the nearest car
 // object, whatever that looks like.
 export function getNearestCar(x, y) {
+  // TODO: make this target the nearest car like the name
   if (cars.length > 0) {
     return cars[0].pos; //targets car safer
   }
