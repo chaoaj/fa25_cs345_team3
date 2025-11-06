@@ -1,13 +1,15 @@
 export class basicTowerProjectile {
 
-    constructor(towerPos) {
-        this.towerPos = towerPos
+    constructor(towerPos, v, d) {
+        this.towerPos = towerPos;
+        this.v = v;
+        this.d = d;
     }
 
     draw() {
-        push()
+        push();
         ellipse(this.towerPos.x, this.towerPos.y, 10, 10);
-        translate()
-        pop()
+        translate();
+        pop();
     }
 }

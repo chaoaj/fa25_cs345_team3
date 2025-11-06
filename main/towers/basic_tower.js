@@ -1,5 +1,5 @@
 import { basicTowerProjectile } from "../projectiles/basic_tower_proj.js";
-import { cars, getNearestCar } from "../sketch.js";
+import { cars, getNearestCar, projectiles } from "../sketch.js";
 
 // Cars aren't implemented yet, so this temporarily returns the mouse position
 export function getFirstCar() {
@@ -15,7 +15,7 @@ const firingRange = 100;
 export function fire(pos) {
   // This code isn't going to work, make a projectiles array in
   // sketch.js or something, push to that, and call proj.draw in draw
-  let proj = new basicTowerProjectile(pos);
+  let proj = new basicTowerProjectile(pos, 10, 10);
   proj.draw();
   getFirstCar().copy();
 }

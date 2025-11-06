@@ -3,7 +3,7 @@ import { Car } from "./cars/basic_car.js";
 
 let towers = [];
 export let cars = [];
-let projectiles = []
+export let projectiles = [];
 let testCar;
 let path1;
 
@@ -35,7 +35,7 @@ export function setup() {
     createVector(80, 396),
     createVector(657.6, 396),
   ]
-  
+
   setNextSpawnTimer();
 }
 
@@ -98,6 +98,14 @@ export function getNearestCar(x, y) {
   //if no car is present, targets dummy pos (prevent crash)
   return {x: Infinity, y: Infinity};
 }
+
+
+
+
+
+
+
+
 // Tower constructor. could be called like new Tower(whatever)
 function Tower(draw, update) {
   // called every frame to draw // TODO: he tower on the screen maybe takes
