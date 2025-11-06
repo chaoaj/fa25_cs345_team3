@@ -61,6 +61,9 @@ export function draw() {
   for (let tower of towers) {
     tower.draw();
   }
+  for (let proj of projectiles) {
+    proj.draw();
+  }
 
   spawnTimer--;
   if (spawnTimer <= 0 && carsSpawned < carsPerLevel) {
