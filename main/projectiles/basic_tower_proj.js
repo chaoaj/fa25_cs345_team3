@@ -11,17 +11,6 @@ export class basicTowerProjectile {
       .mult(this.v);
   }
 
-<<<<<<< Updated upstream
-    constructor(towerPos) {
-        this.towerPos = towerPos
-    }
-
-    draw() {
-        push()
-        ellipse(this.towerPos.x, this.towerPos.y, 10, 10);
-        translate()
-        pop()
-=======
   draw() {
     push();
     let x = this.towerPos.x;
@@ -33,12 +22,12 @@ export class basicTowerProjectile {
     // y += this.v;
     pop();
   }
-
+  
   update() {
     if (this.projPos == this.carPos) {
       projectiles.splice(this, 1);
       cars[0].takeDamage(this.d);
->>>>>>> Stashed changes
+
     }
   }
 }

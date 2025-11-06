@@ -14,13 +14,9 @@ const firingRange = 200;
 export function fire(pos) {
   // This code isn't going to work, make a projectiles array in
   // sketch.js or something, push to that, and call proj.draw in draw
-<<<<<<< Updated upstream
-  let proj = new basicTowerProjectile(pos);
-  proj.draw();
-=======
   let proj = new basicTowerProjectile(pos, getFirstCar(), 10, 10);
   projectiles.push(proj);
->>>>>>> Stashed changes
+
   getFirstCar().copy();
 }
 
