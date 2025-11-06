@@ -52,16 +52,10 @@ export function setup() {
   ]
   
   path3 = [ // 4 corners
-    createVector(280, -20),
-    createVector(280, 175),
-    createVector(75, 175),
-    createVector(75, 75),
-    createVector(175, 75),
-    createVector(175, 405),
-    createVector(75, 405),
+    createVector(175, 500),
+    createVector(175, 305),
     createVector(75, 305),
-    createVector(565, 305),
-    createVector(565, 405),
+    createVector(75, 405),
     createVector(465, 405),
     createVector(465, 75),
     createVector(565, 75),
