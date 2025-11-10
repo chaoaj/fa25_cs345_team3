@@ -22,7 +22,7 @@ export function fire(pos) {
 
 export function update() {
   this.obj.target = getNearestCar(this.obj.position.x, this.obj.position.y);
-  // TODO: Add some way of getting a timestamp so this can have a cooldown
+  // TODO: Add some way of getting a timestamp so this can have a cool down
   const enoughTimeElapsed = true;
   // Check whether the nearest car is close enough.
   const distanceToTarget = dist(
