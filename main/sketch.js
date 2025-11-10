@@ -7,6 +7,8 @@ export let projectiles = [];
 let testCar;
 let path1;
 let path2;
+let path3;
+let path;
 
 let carsPerLevel = 20; // # of cars for first level
 let carsSpawned = 0;
@@ -61,6 +63,7 @@ const towerMenu = [
 
 export function preload() {
   mapImage = loadImage("./assets/board2.png");
+
 }
 
 export function setup() {
@@ -74,7 +77,7 @@ export function setup() {
   };
   towers.push(tower);
 
-  path1 = [
+  path1 = [ // map 1
     createVector(-17.6, 150),
     createVector(360, 150),
     createVector(360, 270),
@@ -94,18 +97,49 @@ export function setup() {
     createVector(-20, 400),
   ]
 
+  path2 = [ // key shape
+    createVector(100, -20),
+    createVector(100, 100),
+    createVector(500, 100),
+    createVector(500, 200),
+    createVector(100, 200),
+    createVector(100, 300),
+    createVector(375, 300),
+    createVector(375, 400),
+    createVector(-20, 400),
+  ]
+  
+  path3 = [ // 4 corners
+    createVector(280, -20),
+    createVector(280, 175),
+    createVector(75, 175),
+    createVector(75, 75),
+    createVector(175, 75),
+    createVector(175, 405),
+    createVector(75, 405),
+    createVector(75, 305),
+    createVector(565, 305),
+    createVector(565, 405),
+    createVector(465, 405),
+    createVector(465, 75),
+    createVector(565, 75),
+    createVector(565, 175),
+    createVector(360, 175),
+    createVector(360, -20),
+  ]
+
+  path = path2; // set equal to whatever level player is on
+
   setNextSpawnTimer();
 }
 
 export function draw() {
   background(220);
   image(mapImage, 0, 0);
-  noStroke();
-  // rect(-5, 100, 250, 45);
-  // rect(205, 100, 45, 150);
-  // rect(25, 205, 225, 45);
-  // rect(25, 205, 45, 150);
-  // rect(25, 310, 400, 45);
+
+  for (let i = 0; i < path.length - 1; i++) {
+    line(path[i].x, path[i].y, path[i+1].x, path[i+1].y);
+  }
 
   for (let tower of towers) {
     if (!tower.obj.isGhost) {
