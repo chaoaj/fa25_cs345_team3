@@ -43,7 +43,7 @@ export function draw() {
   fill(...bodyColor);
   circle(this.obj.position.x, this.obj.position.y, 25);
   // Point the turret at the mouse
-  translate(this.obj.position.y, this.obj.position.x);
+  translate(this.obj.position.x, this.obj.position.y);
   rotate(
     Math.atan2(
       this.obj.target.y - this.obj.position.y,

@@ -13,17 +13,63 @@ let spawnTimer = 0; //Countdown time for next spawn
 
 let mapImage;
 
+//state variable for tower being dragged
+let towerBeingPlaced = null;
+
+// --- NEW: Data-driven array for the tower menu ---
+// To add a new tower, just add a new object to this array.
+const towerMenu = [
+  {
+    name: "Basic Tower",
+    cost: 0,
+    // This function creates the actual tower object
+    create: () => new Tower(BasicTower.draw, BasicTower.update),
+    // This function draws the icon in the menu
+    drawIcon: (x, y) => {
+      push();
+      translate(x, y); // Center the drawing
+      stroke(0);
+      fill(255, 0, 0); // bodyColor
+      circle(0, 0, 25);
+      fill(200, 200, 200); // turretColor
+      rect(-5, -5, 30, 10);
+      pop();
+    },
+    // These will be populated by the draw() loop
+    menuX: 0,
+    menuY: 0,
+    menuSize: 40 // The click-able radius
+  },
+  // --- EXAMPLE: Add a new tower here ---
+  // {
+  //   name: "Stop sign",
+  //   cost: 150,
+  //   create: () => new Tower(CannonTower.draw, CannonTower.update),
+  //   drawIcon: (x, y) => {
+  //     push();
+  //     translate(x, y);
+  //     fill('blue');
+  //     rectMode(CENTER);
+  //     square(0, 0, 30);
+  //     rect(10, 0, 20, 10);
+  //     pop();
+  //   },
+  //   menuX: 0, menuY: 0, menuSize: 40
+  // },
+];
+
 export function preload() {
   mapImage = loadImage("./assets/board_demo.png");
 }
 
 export function setup() {
-  createCanvas(640, 480);
+  createCanvas(840, 480);
 
   // Test tower
   const tower = new Tower(BasicTower.draw, BasicTower.update);
   tower.obj = {
     position: createVector(300, 300),
+    isGhost: false
   };
   towers.push(tower);
 
@@ -50,7 +96,9 @@ export function draw() {
   // rect(25, 310, 400, 45);
 
   for (let tower of towers) {
-    tower.update();
+    if (!tower.obj.isGhost) {
+      tower.update();
+    }
   }
   for (let tower of towers) {
     tower.draw();
@@ -74,6 +122,48 @@ export function draw() {
     }
   }
 
+  if (towerBeingPlaced) {
+    //make ghost tower follow mouse
+    towerBeingPlaced.obj.position.x = mouseX;
+    towerBeingPlaced.obj.position.y = mouseY;
+    //could add code here to tint tower if placement is invalid
+    towerBeingPlaced.draw();
+  }
+
+  //Menu for towers
+  fill('tan');
+  rect(640, 0, 200, 480);
+  noFill();
+  stroke('black');
+  rect(650, 15, 180, 450);
+
+  // --- Draw tower buttons from the menu array ---
+  const menuX = 640;
+  const menuWidth = 200;
+  const col1X = menuX + menuWidth / 4;
+  const col2X = menuX + (menuWidth / 4) * 3;
+  const buttonSpacing = 70; // Space between rows
+  const startY = 60; // Top padding
+
+  towerMenu.forEach((towerType, index) => {
+    let col = index % 2;
+    let row = Math.floor(index / 2);
+
+    // Calculate and store the button's position
+    let x = (col === 0) ? col1X : col2X;
+    let y = startY + row * buttonSpacing;
+    towerType.menuX = x;
+    towerType.menuY = y;
+
+    // Draw the button icon
+    towerType.drawIcon(x, y);
+
+    // Draw cost
+    fill(0);
+    noStroke();
+    textAlign(CENTER, CENTER);
+    text(`$${towerType.cost}`, x, y + 25);
+  });
 }
 
 export function spawnCar() {
@@ -96,14 +186,39 @@ export function getNearestCar(x, y) {
   }
 
   //if no car is present, targets dummy pos (prevent crash)
-  return {x: Infinity, y: Infinity};
+  return { x: Infinity, y: Infinity };
 }
 
+//Function to add mouse pressed functionality
+export function mousePressed() {
 
 
+  if (towerBeingPlaced != null) {
 
+    if (mouseX <= 640) {
+      towerBeingPlaced.obj.isGhost = false;
+      towerBeingPlaced.obj.position.x = mouseX;
+      towerBeingPlaced.obj.position.y = mouseY;
+      towers.push(towerBeingPlaced);
+      towerBeingPlaced = null;
+    } else {
+      towerBeingPlaced = null;
+    }
+    return;
+  }
 
+  for (const towerType of towerMenu) {
+    if (dist(mouseX, mouseY, towerType.menuX, towerType.menuY) < towerType.menuSize / 2) {
+      towerBeingPlaced = towerType.create();
+      towerBeingPlaced.obj = {
+        position: createVector(mouseX, mouseY),
+        isGhost: true
+      };
+      break;
+    }
+  }
 
+}
 
 
 // Tower constructor. could be called like new Tower(whatever)
@@ -137,6 +252,6 @@ function Tower(draw, update) {
 }
 
 // A function to place a tower at a position.
-function placeTower(tower, x, y) {
+//function placeTower(tower, x, y) {
 
-}
+//}
