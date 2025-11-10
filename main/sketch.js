@@ -6,6 +6,7 @@ export let cars = [];
 export let projectiles = [];
 let testCar;
 let path1;
+let path2;
 
 let carsPerLevel = 20; // # of cars for first level
 let carsSpawned = 0;
@@ -59,7 +60,7 @@ const towerMenu = [
 ];
 
 export function preload() {
-  mapImage = loadImage("./assets/board_demo.png");
+  mapImage = loadImage("./assets/board2.png");
 }
 
 export function setup() {
@@ -80,6 +81,17 @@ export function setup() {
     createVector(80, 270),
     createVector(80, 396),
     createVector(657.6, 396),
+  ];
+  path2 = [ // key shape
+    createVector(100, -20),
+    createVector(100, 100),
+    createVector(500, 100),
+    createVector(500, 200),
+    createVector(100, 200),
+    createVector(100, 300),
+    createVector(375, 300),
+    createVector(375, 400),
+    createVector(-20, 400),
   ]
 
   setNextSpawnTimer();
@@ -168,7 +180,7 @@ export function draw() {
 
 export function spawnCar() {
   //create new car with created path
-  let newCar = new Car(path1, random(1, 2.5), 100);
+  let newCar = new Car(path2, random(1, 2.5), 100);
   cars.push(newCar);
 }
 
