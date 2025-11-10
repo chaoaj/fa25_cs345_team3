@@ -149,6 +149,9 @@ export function draw() {
   for (let tower of towers) {
     tower.draw();
   }
+  for (let proj of projectiles) {
+    proj.draw();
+  }
 
   spawnTimer--;
   if (spawnTimer <= 0 && carsSpawned < carsPerLevel) {
@@ -210,6 +213,10 @@ export function draw() {
     textAlign(CENTER, CENTER);
     text(`$${towerType.cost}`, x, y + 25);
   });
+  for (let projectile of projectiles) {
+    projectile.update();
+    projectile.draw();
+  }
 }
 
 export function spawnCar() {

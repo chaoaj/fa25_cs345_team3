@@ -1,7 +1,6 @@
 import { basicTowerProjectile } from "../projectiles/basic_tower_proj.js";
 import { cars, getNearestCar, projectiles } from "../sketch.js";
 
-// Cars aren't implemented yet, so this temporarily returns the mouse position
 export function getFirstCar() {
   return cars[0].pos;
 }
@@ -9,21 +8,22 @@ export function getFirstCar() {
 const bodyColor = [255, 0, 0];
 const turretColor = [200, 200, 200];
 // How many pixels away the tower can shoot
-const firingRange = 100;
+const firingRange = 200;
 
 // this method should fire a projectile at the nearest/first car
-export function fire(pos) {
+export function fire(pos, target) {
   // This code isn't going to work, make a projectiles array in
   // sketch.js or something, push to that, and call proj.draw in draw
-  let proj = new basicTowerProjectile(pos, 10, 10);
-  proj.draw();
-  getFirstCar().copy();
+  let proj = new basicTowerProjectile(pos, target);
+  projectiles.push(proj);
 }
 
 export function update() {
   this.obj.target = getNearestCar(this.obj.position.x, this.obj.position.y);
-  // TODO: Add some way of getting a timestamp so this can have a cool down
-  const enoughTimeElapsed = true;
+  // TODO: Add some way of getting a timestamp so this can have a
+  // cooldown. As it is now, all towers will fire in sync which is
+  // lame. Also frameCount=bad
+  const enoughTimeElapsed = frameCount % 60 === 0;
   // Check whether the nearest car is close enough.
   const distanceToTarget = dist(
     this.obj.target.x,
@@ -33,8 +33,7 @@ export function update() {
   );
   if (enoughTimeElapsed && distanceToTarget < firingRange) {
     // TODO: Fire a projectile once those are implemented
-    console.log("Fire!");
-    fire(this.obj.position);
+    fire(this.obj.position, this.obj.target);
   }
 }
 
