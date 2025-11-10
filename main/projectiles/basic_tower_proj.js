@@ -8,7 +8,6 @@ export class basicTowerProjectile {
 
   update() {
     this.pos = this.pos.add(p5.Vector.mult(this.direction, speed * deltaTime));
-    console.log(this.velocity);
   }
   
   draw() {
