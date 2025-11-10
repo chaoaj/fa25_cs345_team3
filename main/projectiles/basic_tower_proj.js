@@ -1,13 +1,20 @@
+const speed = 0.25;
+
 export class basicTowerProjectile {
+  constructor(towerPos, target) {
+    this.pos = towerPos.copy();
+    this.direction = p5.Vector.sub(target, towerPos).normalize();
+  }
 
-    constructor(towerPos) {
-        this.towerPos = towerPos
-    }
-
-    draw() {
-        push()
-        ellipse(this.towerPos.x, this.towerPos.y, 10, 10);
-        translate()
-        pop()
-    }
+  update() {
+    this.pos = this.pos.add(p5.Vector.mult(this.direction, speed * deltaTime));
+    console.log(this.velocity);
+  }
+  
+  draw() {
+    push()
+    ellipse(this.pos.x, this.pos.y, 10, 10);
+    translate()
+    pop()
+  }
 }

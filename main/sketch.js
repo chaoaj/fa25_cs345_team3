@@ -3,7 +3,7 @@ import { Car } from "./cars/basic_car.js";
 
 let towers = [];
 export let cars = [];
-let projectiles = []
+export let projectiles = []
 let testCar;
 let path1;
 
@@ -73,7 +73,10 @@ export function draw() {
       cars.splice(i, 1);
     }
   }
-
+  for (let projectile of projectiles) {
+    projectile.update();
+    projectile.draw();
+  }
 }
 
 export function spawnCar() {
