@@ -2,10 +2,13 @@ import * as BasicTower from "./towers/basic_tower.js";
 import { Car } from "./cars/basic_car.js";
 import * as Constants from "./constants.js";
 
+// Check this variable for any debug displays or features that you want to add.
+let DEBUG = false;
+
 let towers = [];
 export let cars = [];
 export let projectiles = [];
-let testCar;
+
 let path1;
 let path2;
 let path3;
@@ -87,6 +90,10 @@ export function preload() {
 }
 
 export function setup() {
+  const debugCheckbox = document.querySelector("#debug");
+  debugCheckbox.oninput = function() {
+    DEBUG = debugCheckbox.checked;
+  }
   createCanvas(Constants.mapWidth + Constants.mapWidth, Constants.mapHeight);
 
   // Test tower
@@ -151,10 +158,6 @@ export function setup() {
 export function draw() {
   image(mapImage, 0, 0);
   
-  for (let i = 0; i < path.length - 1; i++) {
-    line(path[i].x, path[i].y, path[i+1].x, path[i+1].y);
-  }
-
   for (let tower of towers) {
     if (!tower.obj.isGhost) {
       tower.update();
@@ -230,6 +233,14 @@ export function draw() {
   for (let projectile of projectiles) {
     projectile.update();
     projectile.draw();
+  }
+
+  // Draw the lines if debug mode is on
+  if (DEBUG) {
+    stroke(255, 0, 0);
+    for (let i = 0; i < path.length - 1; i++) {
+      line(path[i].x, path[i].y, path[i+1].x, path[i+1].y);
+    }
   }
 }
 
