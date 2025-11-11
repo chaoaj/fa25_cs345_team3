@@ -1,5 +1,6 @@
 import * as BasicTower from "./towers/basic_tower.js";
 import { Car } from "./cars/basic_car.js";
+import * as Constants from "./constants.js";
 
 let towers = [];
 export let cars = [];
@@ -22,7 +23,7 @@ let placeImage;
 // be placed.
 function canPlaceAt(x, y) {
   // Return false if the tower is out of bounds.
-  if (x < 0 || x > 640 || y < 0 || y > 480) {
+  if (x < 0 || x > Constants.mapWidth || y < 0 || y > Constants.mapHeight) {
     return false;
   }
   // Get the pixel
@@ -51,10 +52,10 @@ const towerMenu = [
       push();
       translate(x, y); // Center the drawing
       stroke(0);
-      fill(255, 0, 0); // bodyColor
-      circle(0, 0, 25);
-      fill(200, 200, 200); // turretColor
-      rect(-5, -5, 30, 10);
+      fill(...BasicTower.bodyColor); // bodyColor
+      circle(0, 0, BasicTower.bodyCircleSize);
+      fill(...BasicTower.turretColor); // turretColor
+      rect(...BasicTower.bodyTurretSize);
       pop();
     },
     // These will be populated by the draw() loop
@@ -86,15 +87,10 @@ export function preload() {
 }
 
 export function setup() {
-  createCanvas(840, 480);
+  createCanvas(Constants.mapWidth + Constants.mapWidth, Constants.mapHeight);
 
   // Test tower
   const tower = new Tower(BasicTower.draw, BasicTower.update);
-  tower.obj = {
-    position: createVector(300, 300),
-    isGhost: false
-  };
-  // towers.push(tower);
 
   path1 = [ // map 1
     createVector(-17.6, 150),
@@ -153,9 +149,7 @@ export function setup() {
 }
 
 export function draw() {
-  background(220);
   image(mapImage, 0, 0);
-
   
   for (let i = 0; i < path.length - 1; i++) {
     line(path[i].x, path[i].y, path[i+1].x, path[i+1].y);
@@ -201,16 +195,16 @@ export function draw() {
 
   //Menu for towers
   fill('tan');
-  rect(640, 0, 200, 480);
+  rect(Constants.mapWidth, 0, Constants.menuWidth, Constants.mapHeight);
   noFill();
+  // Draw border
   stroke('black');
-  rect(650, 15, 180, 450);
+  rect(Constants.mapWidth + Constants.menuBorderPadding, Constants.menuBorderPadding, 180, 480 - 2 * Constants.menuBorderPadding);
 
   // --- Draw tower buttons from the menu array ---
-  const menuX = 640;
-  const menuWidth = 200;
-  const col1X = menuX + menuWidth / 4;
-  const col2X = menuX + (menuWidth / 4) * 3;
+  const menuX = Constants.mapWidth;
+  const col1X = menuX + Constants.menuWidth / 4;
+  const col2X = menuX + (Constants.menuWidth / 4) * 3;
   const buttonSpacing = 70; // Space between rows
   const startY = 60; // Top padding
 

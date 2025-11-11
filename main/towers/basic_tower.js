@@ -4,8 +4,11 @@ import { cars, getNearestCar, projectiles } from "../sketch.js";
 const allowTint = [100, 255, 100];
 const denyTint = [255, 100, 100];
 
-const bodyColor = [255, 0, 0];
-const turretColor = [200, 200, 200];
+export const bodyColor = [255, 0, 0];
+export const turretColor = [200, 200, 200];
+export const bodyCircleSize = 25;
+export const bodyTurretSize = [-5, -5, 30, 10];
+
 // How many pixels away the tower can shoot
 const firingRange = 200;
 
@@ -63,7 +66,7 @@ export function draw() {
   let target = this.obj.target ?? createVector(0, 0);
   stroke(0, 0, 0);
   fill(...localBodyColor);
-  circle(this.obj.position.x, this.obj.position.y, 25);
+  circle(this.obj.position.x, this.obj.position.y, bodyCircleSize);
   // Point the turret at the mouse
   translate(this.obj.position.x, this.obj.position.y);
   rotate(
@@ -73,6 +76,6 @@ export function draw() {
     )
   );
   fill(...localTurretColor);
-  rect(-5, -5, 30, 10);
+  rect(...bodyTurretSize);
   resetMatrix();
 }
