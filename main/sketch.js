@@ -258,13 +258,17 @@ export function setNextSpawnTimer() {
 // yet to be implemented. takes a position, returns the nearest car
 // object, whatever that looks like.
 export function getNearestCar(x, y) {
-  // TODO: make this target the nearest car like the name
-  if (cars.length > 0) {
-    return cars[0].pos; //targets car safer
+  let pos = createVector(x, y);
+  let nearestCar = createVector(Infinity, Infinity);
+  let dist = pos.dist(nearestCar);
+  for (let car of cars) {
+    let carDist = pos.dist(car.pos);
+    if (carDist < dist) {
+      nearestCar = car.pos;
+      dist = carDist;
+    }
   }
-
-  //if no car is present, targets dummy pos (prevent crash)
-  return { x: Infinity, y: Infinity };
+  return nearestCar;
 }
 
 //Function to add mouse pressed functionality
