@@ -1,4 +1,4 @@
-const speed = 0.25;
+const speed = 0.75;
 
 export class basicTowerProjectile {
   constructor(towerPos, target) {
