@@ -191,12 +191,23 @@ export function draw() {
   }
 
   for (let i = 0; i < projectiles.length; i++) {
-    let projectile = projectiles[i];
+    const projectile = projectiles[i];
+    projectile.update();
     projectile.draw();
 
     // TODO: Check car collision
     // Remove a projectile if it is out of bounds.
-    if (!inBounds(projectile.pos.x, projectile.pos.y)) {
+    let hitCar = null;
+    for (let car of cars) {
+      if (car.pos.dist(projectile.pos) < car.colliderSize) {
+        hitCar = car;
+        break;
+      }
+    }
+    if (hitCar) {
+      hitCar.takeDamage(projectile.damage);
+    }
+    if (hitCar || !inBounds(projectile.pos.x, projectile.pos.y)) {
       projectiles.splice(i, 1);
       i--;
     }
@@ -244,16 +255,18 @@ export function draw() {
     textAlign(CENTER, CENTER);
     text(`$${towerType.cost}`, x, y + 25);
   });
-  for (let projectile of projectiles) {
-    projectile.update();
-    projectile.draw();
-  }
 
   // Draw the lines if debug mode is on
   if (DEBUG) {
     stroke(255, 0, 0);
     for (let i = 0; i < path.length - 1; i++) {
       line(path[i].x, path[i].y, path[i+1].x, path[i+1].y);
+    }
+    for (let car of cars) {
+      stroke(0, 0, 0, 0);
+      fill(255, 255, 0, 100);
+      // Draw car colliders
+      circle(car.pos.x, car.pos.y, car.colliderSize);
     }
   }
 }

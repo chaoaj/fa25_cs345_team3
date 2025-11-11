@@ -1,6 +1,8 @@
 const speed = 0.75;
 
 export class basicTowerProjectile {
+  damage = 25;
+  
   constructor(towerPos, target) {
     this.pos = towerPos.copy();
     this.direction = p5.Vector.sub(target, towerPos).normalize();
