@@ -15,6 +15,25 @@ let carsSpawned = 0;
 let spawnTimer = 0; //Countdown time for next spawn
 
 let mapImage;
+let placeImage;
+
+// Checks an image lookup to see if a tower can be placed at
+// position. Green pixel=tower can be placed, red pixel=tower cannot
+// be placed.
+function canPlaceAt(x, y) {
+  // Return false if the tower is out of bounds.
+  if (x < 0 || x > 640 || y < 0 || y > 480) {
+    return false;
+  }
+  // Get the pixel
+  const pixel = placeImage.get(x, y);
+  // Get the color channels that we use
+  const red = pixel[0];
+  const green = pixel[1];
+  // To account for image weirdness, the pixel is considered "green"
+  // so long as it is more green than red.
+  return green > red;
+}
 
 //state variable for tower being dragged
 let towerBeingPlaced = null;
@@ -63,7 +82,7 @@ const towerMenu = [
 
 export function preload() {
   mapImage = loadImage("./assets/board2.png");
-
+  placeImage = loadImage("./assets/board2_placemap.png");
 }
 
 export function setup() {
@@ -75,7 +94,7 @@ export function setup() {
     position: createVector(300, 300),
     isGhost: false
   };
-  towers.push(tower);
+  // towers.push(tower);
 
   path1 = [ // map 1
     createVector(-17.6, 150),
@@ -137,6 +156,7 @@ export function draw() {
   background(220);
   image(mapImage, 0, 0);
 
+  
   for (let i = 0; i < path.length - 1; i++) {
     line(path[i].x, path[i].y, path[i+1].x, path[i+1].y);
   }
@@ -175,7 +195,7 @@ export function draw() {
     //make ghost tower follow mouse
     towerBeingPlaced.obj.position.x = mouseX;
     towerBeingPlaced.obj.position.y = mouseY;
-    //could add code here to tint tower if placement is invalid
+    towerBeingPlaced.obj.canPlace = canPlaceAt(mouseX, mouseY);
     towerBeingPlaced.draw();
   }
 
@@ -245,13 +265,14 @@ export function getNearestCar(x, y) {
 //Function to add mouse pressed functionality
 export function mousePressed() {
   if (towerBeingPlaced !== null) {
-    if (mouseX <= 640) {
+    if (canPlaceAt(mouseX, mouseY)) {
       towerBeingPlaced.obj.isGhost = false;
-      towerBeingPlaced.obj.position.x = mouseX;
-      towerBeingPlaced.obj.position.y = mouseY;
+      towerBeingPlaced.obj.position = createVector(mouseX, mouseY);
       towers.push(towerBeingPlaced);
       towerBeingPlaced = null;
-    } else {
+    } else if (mouseX >= 640) {
+      // Remove ghost tower if the tower is being placed back in the
+      // menu.
       towerBeingPlaced = null;
     }
     return;
@@ -267,7 +288,6 @@ export function mousePressed() {
       break;
     }
   }
-
 }
 
 

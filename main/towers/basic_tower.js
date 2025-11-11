@@ -1,6 +1,9 @@
 import { basicTowerProjectile } from "../projectiles/basic_tower_proj.js";
 import { cars, getNearestCar, projectiles } from "../sketch.js";
 
+const allowTint = [100, 255, 100];
+const denyTint = [255, 100, 100];
+
 const bodyColor = [255, 0, 0];
 const turretColor = [200, 200, 200];
 // How many pixels away the tower can shoot
@@ -33,10 +36,33 @@ export function update() {
   }
 }
 
+function tintColor(base, tint, n) {
+  let ret = [];
+  for (let i = 0; i < 3; i++) {
+    ret.push(base[i] * (1 - n) + tint[i] * n);
+  }
+  return ret;
+}
+
 export function draw() {
+  let localBodyColor;
+  let localTurretColor;
+  // Tint the colors
+  if (this.obj.isGhost) {
+    if (this.obj.canPlace) {
+      localBodyColor = tintColor(bodyColor, allowTint, 0.7);
+      localTurretColor = tintColor(turretColor, allowTint, 0.7);
+    } else {
+      localBodyColor = tintColor(bodyColor, denyTint, 0.7);
+      localTurretColor = tintColor(turretColor, denyTint, 0.7);
+    }
+  } else {
+    localBodyColor = bodyColor;
+    localTurretColor = turretColor;
+  }
   let target = this.obj.target ?? createVector(0, 0);
   stroke(0, 0, 0);
-  fill(...bodyColor);
+  fill(...localBodyColor);
   circle(this.obj.position.x, this.obj.position.y, 25);
   // Point the turret at the mouse
   translate(this.obj.position.x, this.obj.position.y);
@@ -46,7 +72,7 @@ export function draw() {
       target.x - this.obj.position.x
     )
   );
-  fill(...turretColor);
+  fill(...localTurretColor);
   rect(-5, -5, 30, 10);
   resetMatrix();
 }
