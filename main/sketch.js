@@ -21,12 +21,17 @@ let spawnTimer = 0; //Countdown time for next spawn
 let mapImage;
 let placeImage;
 
+// Whether a coordinate is in bounds of the screen
+function inBounds(x, y) {
+  return x >= 0 && x <= Constants.mapWidth && y >= 0 && y <= Constants.mapHeight;
+}
+
 // Checks an image lookup to see if a tower can be placed at
 // position. Green pixel=tower can be placed, red pixel=tower cannot
 // be placed.
 function canPlaceAt(x, y) {
   // Return false if the tower is out of bounds.
-  if (x < 0 || x > Constants.mapWidth || y < 0 || y > Constants.mapHeight) {
+  if (!inBounds(x, y)) {
     return false;
   }
   // Get the pixel
@@ -166,9 +171,6 @@ export function draw() {
   for (let tower of towers) {
     tower.draw();
   }
-  for (let proj of projectiles) {
-    proj.draw();
-  }
 
   spawnTimer--;
   if (spawnTimer <= 0 && carsSpawned < carsPerLevel) {
@@ -185,6 +187,18 @@ export function draw() {
     //Remove car from array at death or end of map
     if (car.isFinished || car.isDead()) {
       cars.splice(i, 1);
+    }
+  }
+
+  for (let i = 0; i < projectiles.length; i++) {
+    let projectile = projectiles[i];
+    projectile.draw();
+
+    // TODO: Check car collision
+    // Remove a projectile if it is out of bounds.
+    if (!inBounds(projectile.pos.x, projectile.pos.y)) {
+      projectiles.splice(i, 1);
+      i--;
     }
   }
 
