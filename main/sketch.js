@@ -244,10 +244,7 @@ export function getNearestCar(x, y) {
 
 //Function to add mouse pressed functionality
 export function mousePressed() {
-
-
-  if (towerBeingPlaced != null) {
-
+  if (towerBeingPlaced !== null) {
     if (mouseX <= 640) {
       towerBeingPlaced.obj.isGhost = false;
       towerBeingPlaced.obj.position.x = mouseX;

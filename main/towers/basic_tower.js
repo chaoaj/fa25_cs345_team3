@@ -1,10 +1,6 @@
 import { basicTowerProjectile } from "../projectiles/basic_tower_proj.js";
 import { cars, getNearestCar, projectiles } from "../sketch.js";
 
-export function getFirstCar() {
-  return cars[0].pos;
-}
-
 const bodyColor = [255, 0, 0];
 const turretColor = [200, 200, 200];
 // How many pixels away the tower can shoot
@@ -38,6 +34,7 @@ export function update() {
 }
 
 export function draw() {
+  let target = this.obj.target ?? createVector(0, 0);
   stroke(0, 0, 0);
   fill(...bodyColor);
   circle(this.obj.position.x, this.obj.position.y, 25);
@@ -45,8 +42,8 @@ export function draw() {
   translate(this.obj.position.x, this.obj.position.y);
   rotate(
     Math.atan2(
-      this.obj.target.y - this.obj.position.y,
-      this.obj.target.x - this.obj.position.x
+      target.y - this.obj.position.y,
+      target.x - this.obj.position.x
     )
   );
   fill(...turretColor);
