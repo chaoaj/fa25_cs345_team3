@@ -96,6 +96,7 @@ export function preload() {
 
 export function setup() {
   const debugCheckbox = document.querySelector("#debug");
+  DEBUG = debugCheckbox.checked;
   debugCheckbox.oninput = function() {
     DEBUG = debugCheckbox.checked;
   }
