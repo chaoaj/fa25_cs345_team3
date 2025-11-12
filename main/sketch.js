@@ -41,7 +41,18 @@ function canPlaceAt(x, y) {
   const green = pixel[1];
   // To account for image weirdness, the pixel is considered "green"
   // so long as it is more green than red.
-  return green > red;
+  if (green < red) {
+    return false;
+  }
+  for (let tower of towers) {
+    if (tower == towerBeingPlaced) {
+      continue;
+    }
+    if (dist(tower.obj.position.x, tower.obj.position.y, x, y) < 20) {
+      return false;
+    }
+  }
+  return true;
 }
 
 //state variable for tower being dragged
