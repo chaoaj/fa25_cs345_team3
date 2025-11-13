@@ -21,6 +21,8 @@ let spawnTimer = 0; //Countdown time for next spawn
 let mapImage;
 let placeImage;
 
+let menu = true; //draws main menu until false
+
 // Whether a coordinate is in bounds of the screen
 function inBounds(x, y) {
   return x >= 0 && x <= Constants.mapWidth && y >= 0 && y <= Constants.mapHeight;
@@ -111,7 +113,7 @@ export function setup() {
   debugCheckbox.oninput = function() {
     DEBUG = debugCheckbox.checked;
   }
-  createCanvas(Constants.mapWidth + Constants.mapWidth, Constants.mapHeight);
+  createCanvas(Constants.mapWidth + Constants.menuWidth, Constants.mapHeight);
 
   // Test tower
   const tower = new Tower(BasicTower.draw, BasicTower.update);
@@ -172,7 +174,38 @@ export function setup() {
   setNextSpawnTimer();
 }
 
-export function draw() {
+export function draw() { //draws menu until play is clicked, then draws game
+  if (menu) {
+    menuDraw();
+  } else {
+    gameDraw();
+  }
+}
+
+export function menuDraw() { //main menu
+background('tan');
+  stroke(51);
+  strokeWeight(2);
+  fill('tan');
+  
+  //buttons
+  rect(315, 150, 210, 65);//start
+  rect(315, 250, 210, 65);//credits
+  rect(315, 350, 210, 65);//quit
+  
+  //title line
+  line(210, 125, 630, 125);
+  
+  //text
+  fill(255);
+  textSize(40);
+  text('Start', 370, 198)
+  text('Credits', 355, 298)
+  text('Quit', 375, 398)
+}
+
+
+export function gameDraw() { //actual game
   image(mapImage, 0, 0);
   
   for (let tower of towers) {
@@ -264,6 +297,7 @@ export function draw() {
     // Draw cost
     fill(0);
     noStroke();
+    textSize(16);
     textAlign(CENTER, CENTER);
     text(`$${towerType.cost}`, x, y + 25);
   });
@@ -312,6 +346,10 @@ export function getNearestCar(x, y) {
 
 //Function to add mouse pressed functionality
 export function mousePressed() {
+  if ((mouseX > 315 && mouseX < 525) && (mouseY > 150 && mouseY < 215)) {
+      menu = false;
+    }
+
   if (towerBeingPlaced !== null) {
     if (canPlaceAt(mouseX, mouseY)) {
       towerBeingPlaced.obj.isGhost = false;
