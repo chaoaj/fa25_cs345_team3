@@ -123,9 +123,6 @@ export function setup() {
   };
   createCanvas(Constants.mapWidth + Constants.mapWidth, Constants.mapHeight);
 
-  // Test tower
-  const tower = new Tower(BasicTower.draw, BasicTower.update);
-
   path1 = [
     // map 1
     createVector(-17.6, 150),
