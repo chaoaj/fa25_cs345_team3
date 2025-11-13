@@ -17,13 +17,16 @@ let path;
 let carsPerLevel = 20; // # of cars for first level
 let carsSpawned = 0;
 let spawnTimer = 0; //Countdown time for next spawn
+let currency = 0;
 
 let mapImage;
 let placeImage;
 
 // Whether a coordinate is in bounds of the screen
 function inBounds(x, y) {
-  return x >= 0 && x <= Constants.mapWidth && y >= 0 && y <= Constants.mapHeight;
+  return (
+    x >= 0 && x <= Constants.mapWidth && y >= 0 && y <= Constants.mapHeight
+  );
 }
 
 // Checks an image lookup to see if a tower can be placed at
@@ -69,7 +72,7 @@ const towerMenu = [
     // These will be populated by the draw() loop
     menuX: 0,
     menuY: 0,
-    menuSize: 40 // The click-able radius
+    menuSize: 40, // The click-able radius
   },
   // --- EXAMPLE: Add a new tower here ---
   // {
@@ -97,15 +100,16 @@ export function preload() {
 export function setup() {
   const debugCheckbox = document.querySelector("#debug");
   DEBUG = debugCheckbox.checked;
-  debugCheckbox.oninput = function() {
+  debugCheckbox.oninput = function () {
     DEBUG = debugCheckbox.checked;
-  }
+  };
   createCanvas(Constants.mapWidth + Constants.mapWidth, Constants.mapHeight);
 
   // Test tower
   const tower = new Tower(BasicTower.draw, BasicTower.update);
 
-  path1 = [ // map 1
+  path1 = [
+    // map 1
     createVector(-17.6, 150),
     createVector(360, 150),
     createVector(360, 270),
@@ -113,7 +117,8 @@ export function setup() {
     createVector(80, 396),
     createVector(657.6, 396),
   ];
-  path2 = [ // key shape
+  path2 = [
+    // key shape
     createVector(100, -20),
     createVector(100, 100),
     createVector(500, 100),
@@ -123,9 +128,10 @@ export function setup() {
     createVector(375, 300),
     createVector(375, 400),
     createVector(-20, 400),
-  ]
+  ];
 
-  path2 = [ // key shape
+  path2 = [
+    // key shape
     createVector(100, -20),
     createVector(100, 100),
     createVector(500, 100),
@@ -135,9 +141,10 @@ export function setup() {
     createVector(375, 300),
     createVector(375, 400),
     createVector(-20, 400),
-  ]
-  
-  path3 = [ // 4 corners
+  ];
+
+  path3 = [
+    // 4 corners
     createVector(280, -20),
     createVector(280, 175),
     createVector(75, 175),
@@ -154,7 +161,7 @@ export function setup() {
     createVector(565, 175),
     createVector(360, 175),
     createVector(360, -20),
-  ]
+  ];
 
   path = path2; // set equal to whatever level player is on
 
@@ -163,7 +170,7 @@ export function setup() {
 
 export function draw() {
   image(mapImage, 0, 0);
-  
+
   for (let tower of towers) {
     if (!tower.obj.isGhost) {
       tower.update();
@@ -188,7 +195,11 @@ export function draw() {
     //Remove car from array at death or end of map
     if (car.isFinished || car.isDead()) {
       cars.splice(i, 1);
+      if (car.isDead()) {
+        currency += car.value();
+      }
     }
+
   }
 
   for (let i = 0; i < projectiles.length; i++) {
@@ -223,12 +234,17 @@ export function draw() {
   }
 
   //Menu for towers
-  fill('tan');
+  fill("tan");
   rect(Constants.mapWidth, 0, Constants.menuWidth, Constants.mapHeight);
   noFill();
   // Draw border
-  stroke('black');
-  rect(Constants.mapWidth + Constants.menuBorderPadding, Constants.menuBorderPadding, 180, 480 - 2 * Constants.menuBorderPadding);
+  stroke("black");
+  rect(
+    Constants.mapWidth + Constants.menuBorderPadding,
+    Constants.menuBorderPadding,
+    180,
+    480 - 2 * Constants.menuBorderPadding
+  );
 
   // --- Draw tower buttons from the menu array ---
   const menuX = Constants.mapWidth;
@@ -242,7 +258,7 @@ export function draw() {
     let row = Math.floor(index / 2);
 
     // Calculate and store the button's position
-    let x = (col === 0) ? col1X : col2X;
+    let x = col === 0 ? col1X : col2X;
     let y = startY + row * buttonSpacing;
     towerType.menuX = x;
     towerType.menuY = y;
@@ -261,7 +277,7 @@ export function draw() {
   if (DEBUG) {
     stroke(255, 0, 0);
     for (let i = 0; i < path.length - 1; i++) {
-      line(path[i].x, path[i].y, path[i+1].x, path[i+1].y);
+      line(path[i].x, path[i].y, path[i + 1].x, path[i + 1].y);
     }
     for (let car of cars) {
       stroke(0, 0, 0, 0);
@@ -270,6 +286,12 @@ export function draw() {
       circle(car.pos.x, car.pos.y, car.colliderSize);
     }
   }
+  textAlign(RIGHT, TOP);
+  textSize(16);
+  fill(0);
+  noStroke();
+  text(`Money: $${currency}`, Constants.mapWidth - 10, 10);
+
 }
 
 export function spawnCar() {
@@ -316,17 +338,19 @@ export function mousePressed() {
   }
 
   for (const towerType of towerMenu) {
-    if (dist(mouseX, mouseY, towerType.menuX, towerType.menuY) < towerType.menuSize / 2) {
+    if (
+      dist(mouseX, mouseY, towerType.menuX, towerType.menuY) <
+      towerType.menuSize / 2
+    ) {
       towerBeingPlaced = towerType.create();
       towerBeingPlaced.obj = {
         position: createVector(mouseX, mouseY),
-        isGhost: true
+        isGhost: true,
       };
       break;
     }
   }
 }
-
 
 // Tower constructor. could be called like new Tower(whatever)
 function Tower(draw, update) {

@@ -4,7 +4,7 @@
 export class Car {
   // Size of the collision circle of the car.
   colliderSize = 30;
-  
+
   constructor(path, speed = 2, health = 100) {
     // returns object with all of cars data
 
@@ -56,6 +56,10 @@ export class Car {
 
   isDead() {
     return this.currentHealth <= 0;
+  }
+
+  value() {
+    return 100;
   }
 
   update() {
