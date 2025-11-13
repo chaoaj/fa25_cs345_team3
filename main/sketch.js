@@ -90,7 +90,7 @@ const towerMenu = [
     menuY: 0,
     menuSize: 40, // The click-able radius
     menuPos: null,
-    menuSize: 40 // The click-able radius
+    menuSize: 40, // The click-able radius
   },
   // --- EXAMPLE: Add a new tower here ---
   // {
@@ -217,7 +217,6 @@ export function draw() {
         currency += car.value();
       }
     }
-
   }
 
   for (let i = 0; i < projectiles.length; i++) {
@@ -275,15 +274,9 @@ export function draw() {
     let col = index % 2;
     let row = Math.floor(index / 2);
 
-    // Calculate and store the button's position
-    let x = col === 0 ? col1X : col2X;
-    let y = startY + row * buttonSpacing;
-    towerType.menuX = x;
-    towerType.menuY = y;
-
     // TODO: put this in setup somehow, because it doesn't need to be
     // recalculated every frame.
-    const x = (col === 0) ? col1X : col2X;
+    const x = col === 0 ? col1X : col2X;
     const y = startY + row * buttonSpacing;
     towerType.menuPos = createVector(x, y);
 
@@ -302,15 +295,26 @@ export function draw() {
     tmenuY = towerBeingMenued.obj.position.y;
 
     // Make sure that the menu doesn't go below the screen
-    tmenuY = Math.min(tmenuY, Constants.mapHeight - Constants.towerMenuHeight - 10);
-    fill('tan');
+    tmenuY = Math.min(
+      tmenuY,
+      Constants.mapHeight - Constants.towerMenuHeight - 10
+    );
+    fill("tan");
     rect(tmenuX, tmenuY, Constants.towerMenuWidth, Constants.towerMenuHeight);
     fill(0, 0, 0);
     textAlign(LEFT, TOP);
     text(`${towerBeingMenued.name}`, tmenuX, tmenuY);
     fill(255, 0, 0);
     // TODO: make some sort of button asset for this :3
-    rect(tmenuX + 10, tmenuY + Constants.towerMenuHeight - Constants.towerMenuCloseButtonSize - 10, Constants.towerMenuCloseButtonSize, Constants.towerMenuCloseButtonSize);
+    rect(
+      tmenuX + 10,
+      tmenuY +
+        Constants.towerMenuHeight -
+        Constants.towerMenuCloseButtonSize -
+        10,
+      Constants.towerMenuCloseButtonSize,
+      Constants.towerMenuCloseButtonSize
+    );
   }
 
   // Draw the lines if debug mode is on
@@ -331,7 +335,6 @@ export function draw() {
   fill(0);
   noStroke();
   text(`Money: $${currency}`, Constants.mapWidth - 10, 10);
-
 }
 
 export function spawnCar() {
@@ -385,11 +388,12 @@ export function mousePressed() {
   // Check for a click to the menu TODO: It'd be neat if checking if a
   // vector collided with a rectangle (AABB) was its own function,
   // because i just wrote it twice.
-  if (mouseX >= tmenuX
-      && mouseX < tmenuX + Constants.towerMenuWidth
-      && mouseY >= tmenuY
-      && mouseY < tmenuY + Constants.towerMenuHeight) {
-
+  if (
+    mouseX >= tmenuX &&
+    mouseX < tmenuX + Constants.towerMenuWidth &&
+    mouseY >= tmenuY &&
+    mouseY < tmenuY + Constants.towerMenuHeight
+  ) {
     somethingClicked = true;
     // Check if the close button was clicked
 
@@ -397,16 +401,22 @@ export function mousePressed() {
     // menu WILL cause a bug at some point.
     const beginX = tmenuX + 10;
     const endX = beginX + Constants.towerMenuCloseButtonSize;
-    const beginY = tmenuY + Constants.towerMenuHeight - Constants.towerMenuCloseButtonSize - 10;
+    const beginY =
+      tmenuY +
+      Constants.towerMenuHeight -
+      Constants.towerMenuCloseButtonSize -
+      10;
     const endY = beginY + Constants.towerMenuCloseButtonSize;
-    if (mouseX >= beginX
-        && mouseX < endX
-        && mouseY >= beginY
-        && mouseY < endY) {
+    if (
+      mouseX >= beginX &&
+      mouseX < endX &&
+      mouseY >= beginY &&
+      mouseY < endY
+    ) {
       // Jankily remove the tower
       towers = towers.filter(function (t) {
         return t != towerBeingMenued;
-      })
+      });
       towerBeingMenued = null;
     }
   }
@@ -418,66 +428,65 @@ export function mousePressed() {
       towerType.menuSize / 2
     ) {
       towerBeingPlaced = towerType.create();
-    if (mouseVector.dist(towerType.menuPos) < towerType.menuSize / 2) {
-      towerBeingPlaced = towerType.create(towerType.name);
-      towerBeingPlaced.obj = {
-        position: createVector(mouseX, mouseY),
-        isGhost: true,
-      };
-      somethingClicked = true;
-      break;
-    }
-  }
-
-  // If nothing was clicked so far, check if any tower was clicked
-  if (!somethingClicked) {
-    for (let tower of towers) {
-      //                                         TODO: get rid of this magic number
-      if (mouseVector.dist(tower.obj.position) < 30) {
-        towerBeingMenued = tower;
+      if (mouseVector.dist(towerType.menuPos) < towerType.menuSize / 2) {
+        towerBeingPlaced = towerType.create(towerType.name);
+        towerBeingPlaced.obj = {
+          position: createVector(mouseX, mouseY),
+          isGhost: true,
+        };
         somethingClicked = true;
         break;
       }
     }
+
+    // If nothing was clicked so far, check if any tower was clicked
+    if (!somethingClicked) {
+      for (let tower of towers) {
+        //                                         TODO: get rid of this magic number
+        if (mouseVector.dist(tower.obj.position) < 30) {
+          towerBeingMenued = tower;
+          somethingClicked = true;
+          break;
+        }
+      }
+    }
+    // If nothing was clicked, close the tower popup menu
+    if (!somethingClicked) {
+      towerBeingMenued = null;
+    }
   }
-  // If nothing was clicked, close the tower popup menu
-  if (!somethingClicked) {
-    towerBeingMenued = null;
+
+  // Tower constructor. could be called like new Tower(whatever)
+  function Tower(draw, update, name) {
+    // called every frame to draw // TODO: he tower on the screen maybe takes
+    // a position, or maybe uses the position stored in the object
+    this.draw = draw;
+    // runs the actual game code, called every frame.
+    //
+    // for the basic tower, this would probably get a timestamp, and
+    // compare it to a local variable lastFiredTimestamp. if the
+    // difference is greater than a second, call getNearestCar. If its
+    // within a certain radius, fire a new Projectile() with the
+    // position of the tower, and with a velocity pointing towards the
+    // car. then, update lastFiredTimestamp to the current timestamp,
+    // so that a second or so will be waited again.
+    this.update = update;
+    this.name = name;
+    // local data for this tower; varies between towers; composition
+    // over inheritance!
+    this.obj = {};
+    // Other possible properties:
+    //  • position	- (x,y) coordinates
+    //  • cost		- how much it costs to place it
+    //  • upgrades	- some structure for the upgrades?
+    //  • name          - what type of tower it is. might be used somewhere
+    //  • isGhost       - while a tower is being placed, it is shown on the
+    //                    screen, but it shouldn't fire at anything. if this
+    //                    is true, then the tower doesn't actually exist,
+    //                    and shouldn't fire or anything.
+    // would have to have other code implemented to know what we need.
   }
+
+  // A function to place a tower at a position.
+  //function placeTower(tower, x, y) {
 }
-
-// Tower constructor. could be called like new Tower(whatever)
-function Tower(draw, update, name) {
-  // called every frame to draw // TODO: he tower on the screen maybe takes
-  // a position, or maybe uses the position stored in the object
-  this.draw = draw;
-  // runs the actual game code, called every frame.
-  //
-  // for the basic tower, this would probably get a timestamp, and
-  // compare it to a local variable lastFiredTimestamp. if the
-  // difference is greater than a second, call getNearestCar. If its
-  // within a certain radius, fire a new Projectile() with the
-  // position of the tower, and with a velocity pointing towards the
-  // car. then, update lastFiredTimestamp to the current timestamp,
-  // so that a second or so will be waited again.
-  this.update = update;
-  this.name = name;
-  // local data for this tower; varies between towers; composition
-  // over inheritance!
-  this.obj = {};
-  // Other possible properties:
-  //  • position	- (x,y) coordinates
-  //  • cost		- how much it costs to place it
-  //  • upgrades	- some structure for the upgrades?
-  //  • name          - what type of tower it is. might be used somewhere
-  //  • isGhost       - while a tower is being placed, it is shown on the
-  //                    screen, but it shouldn't fire at anything. if this
-  //                    is true, then the tower doesn't actually exist,
-  //                    and shouldn't fire or anything.
-  // would have to have other code implemented to know what we need.
-}
-
-// A function to place a tower at a position.
-//function placeTower(tower, x, y) {
-
-//}
