@@ -462,7 +462,7 @@ export function mousePressed() {
   // Check if a tower in the tower purchase menu was clicked
   for (const towerType of towerMenu) {
     if (
-      dist(mouseX, mouseY, towerType.menuX, towerType.menuY) <
+      dist(mouseX, mouseY, towerType.menuPos.x, towerType.menuPos.y) <
         towerType.menuSize / 2
     ) {
       towerBeingPlaced = towerType.create();
@@ -493,38 +493,35 @@ export function mousePressed() {
       towerBeingMenued = null;
     }
   }
+}
 
-  // Tower constructor. could be called like new Tower(whatever)
-  function Tower(draw, update, name) {
-    // called every frame to draw // TODO: he tower on the screen maybe takes
-    // a position, or maybe uses the position stored in the object
-    this.draw = draw;
-    // runs the actual game code, called every frame.
-    //
-    // for the basic tower, this would probably get a timestamp, and
-    // compare it to a local variable lastFiredTimestamp. if the
-    // difference is greater than a second, call getNearestCar. If its
-    // within a certain radius, fire a new Projectile() with the
-    // position of the tower, and with a velocity pointing towards the
-    // car. then, update lastFiredTimestamp to the current timestamp,
-    // so that a second or so will be waited again.
-    this.update = update;
-    this.name = name;
-    // local data for this tower; varies between towers; composition
-    // over inheritance!
-    this.obj = {};
-    // Other possible properties:
-    //  • position	- (x,y) coordinates
-    //  • cost		- how much it costs to place it
-    //  • upgrades	- some structure for the upgrades?
-    //  • name          - what type of tower it is. might be used somewhere
-    //  • isGhost       - while a tower is being placed, it is shown on the
-    //                    screen, but it shouldn't fire at anything. if this
-    //                    is true, then the tower doesn't actually exist,
-    //                    and shouldn't fire or anything.
-    // would have to have other code implemented to know what we need.
-  }
-
-  // A function to place a tower at a position.
-  //function placeTower(tower, x, y) {
+// Tower constructor. could be called like new Tower(whatever)
+function Tower(draw, update, name) {
+  // called every frame to draw // TODO: he tower on the screen maybe takes
+  // a position, or maybe uses the position stored in the object
+  this.draw = draw;
+  // runs the actual game code, called every frame.
+  //
+  // for the basic tower, this would probably get a timestamp, and
+  // compare it to a local variable lastFiredTimestamp. if the
+  // difference is greater than a second, call getNearestCar. If its
+  // within a certain radius, fire a new Projectile() with the
+  // position of the tower, and with a velocity pointing towards the
+  // car. then, update lastFiredTimestamp to the current timestamp,
+  // so that a second or so will be waited again.
+  this.update = update;
+  this.name = name;
+  // local data for this tower; varies between towers; composition
+  // over inheritance!
+  this.obj = {};
+  // Other possible properties:
+  //  • position	- (x,y) coordinates
+  //  • cost		- how much it costs to place it
+  //  • upgrades	- some structure for the upgrades?
+  //  • name          - what type of tower it is. might be used somewhere
+  //  • isGhost       - while a tower is being placed, it is shown on the
+  //                    screen, but it shouldn't fire at anything. if this
+  //                    is true, then the tower doesn't actually exist,
+  //                    and shouldn't fire or anything.
+  // would have to have other code implemented to know what we need.
 }
