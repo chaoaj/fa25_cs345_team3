@@ -25,6 +25,7 @@ let placeImage;
 // Tower menu coordinates
 let tmenuX;
 let tmenuY;
+let menu = true; //draws main menu until false
 
 // Whether a coordinate is in bounds of the screen
 function inBounds(x, y) {
@@ -120,8 +121,8 @@ export function setup() {
   DEBUG = debugCheckbox.checked;
   debugCheckbox.oninput = function () {
     DEBUG = debugCheckbox.checked;
-  };
-  createCanvas(Constants.mapWidth + Constants.mapWidth, Constants.mapHeight);
+  }
+  createCanvas(Constants.mapWidth + Constants.menuWidth, Constants.mapHeight);
 
   path1 = [
     // map 1
@@ -183,7 +184,39 @@ export function setup() {
   setNextSpawnTimer();
 }
 
-export function draw() {
+export function draw() { //draws menu until play is clicked, then draws game
+  if (menu) {
+    menuDraw();
+  } else {
+    gameDraw();
+  }
+}
+
+export function menuDraw() { //main menu
+  background('tan');
+  stroke(51);
+  strokeWeight(2);
+  fill('tan');
+  
+  //buttons
+  rect(315, 150, 210, 65);//start
+  rect(315, 250, 210, 65);//credits
+  rect(315, 350, 210, 65);//quit
+  
+  //title line
+  line(210, 125, 630, 125);
+  
+  //text
+  fill(255);
+  textSize(40);
+  text('Start', 370, 198)
+  text('Credits', 355, 298)
+  text('Quit', 375, 398)
+}
+
+
+export function gameDraw() { //actual game
+  strokeWeight(1);
   image(mapImage, 0, 0);
 
   for (let tower of towers) {
@@ -283,6 +316,7 @@ export function draw() {
     // Draw cost
     fill(0);
     noStroke();
+    textSize(16);
     textAlign(CENTER, CENTER);
     text(`$${towerType.cost}`, x, y + 25);
   });
@@ -364,6 +398,12 @@ export function getNearestCar(x, y) {
 //Function to add mouse pressed functionality
 export function mousePressed() {
   const mouseVector = createVector(mouseX, mouseY);
+  if (menu) {
+    if ((mouseX > 315 && mouseX < 525) && (mouseY > 150 && mouseY < 215)) {
+      menu = false;
+    }
+    return;
+  }
   // If there is a tower being placed, then clicking the mouse should
   // place the tower
   if (towerBeingPlaced) {
@@ -379,6 +419,7 @@ export function mousePressed() {
     }
     return;
   }
+  
 
   let somethingClicked = false;
 
@@ -387,9 +428,9 @@ export function mousePressed() {
   // because i just wrote it twice.
   if (
     mouseX >= tmenuX &&
-    mouseX < tmenuX + Constants.towerMenuWidth &&
-    mouseY >= tmenuY &&
-    mouseY < tmenuY + Constants.towerMenuHeight
+      mouseX < tmenuX + Constants.towerMenuWidth &&
+      mouseY >= tmenuY &&
+      mouseY < tmenuY + Constants.towerMenuHeight
   ) {
     somethingClicked = true;
     // Check if the close button was clicked
@@ -399,16 +440,16 @@ export function mousePressed() {
     const beginX = tmenuX + 10;
     const endX = beginX + Constants.towerMenuCloseButtonSize;
     const beginY =
-      tmenuY +
-      Constants.towerMenuHeight -
-      Constants.towerMenuCloseButtonSize -
-      10;
+          tmenuY +
+          Constants.towerMenuHeight -
+          Constants.towerMenuCloseButtonSize -
+          10;
     const endY = beginY + Constants.towerMenuCloseButtonSize;
     if (
       mouseX >= beginX &&
-      mouseX < endX &&
-      mouseY >= beginY &&
-      mouseY < endY
+        mouseX < endX &&
+        mouseY >= beginY &&
+        mouseY < endY
     ) {
       // Jankily remove the tower
       towers = towers.filter(function (t) {
@@ -422,7 +463,7 @@ export function mousePressed() {
   for (const towerType of towerMenu) {
     if (
       dist(mouseX, mouseY, towerType.menuX, towerType.menuY) <
-      towerType.menuSize / 2
+        towerType.menuSize / 2
     ) {
       towerBeingPlaced = towerType.create();
       if (mouseVector.dist(towerType.menuPos) < towerType.menuSize / 2) {
