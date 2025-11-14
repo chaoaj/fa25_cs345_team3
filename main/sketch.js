@@ -17,7 +17,8 @@ let path;
 let carsPerLevel = 20; // # of cars for first level
 let carsSpawned = 0;
 let spawnTimer = 0; //Countdown time for next spawn
-let currency = 0;
+let currency = 500;
+let health = 100;
 
 let mapImage;
 let placeImage;
@@ -121,7 +122,7 @@ export function setup() {
   DEBUG = debugCheckbox.checked;
   debugCheckbox.oninput = function () {
     DEBUG = debugCheckbox.checked;
-  }
+  };
   createCanvas(Constants.mapWidth + Constants.menuWidth, Constants.mapHeight);
 
   path1 = [
@@ -184,7 +185,8 @@ export function setup() {
   setNextSpawnTimer();
 }
 
-export function draw() { //draws menu until play is clicked, then draws game
+export function draw() {
+  //draws menu until play is clicked, then draws game
   if (menu) {
     menuDraw();
   } else {
@@ -192,32 +194,42 @@ export function draw() { //draws menu until play is clicked, then draws game
   }
 }
 
-export function menuDraw() { //main menu
-  background('tan');
+export function menuDraw() {
+  //main menu
+  background("tan");
   stroke(51);
   strokeWeight(2);
-  fill('tan');
-  
+  fill("tan");
+
   //buttons
-  rect(315, 150, 210, 65);//start
-  rect(315, 250, 210, 65);//credits
-  rect(315, 350, 210, 65);//quit
-  
+  rect(315, 150, 210, 65); //start
+  rect(315, 250, 210, 65); //credits
+  rect(315, 350, 210, 65); //quit
+
   //title line
   line(210, 125, 630, 125);
-  
+
   //text
   fill(255);
   textSize(40);
-  text('Start', 370, 198)
-  text('Credits', 355, 298)
-  text('Quit', 375, 398)
+  text("Start", 370, 198);
+  text("Credits", 355, 298);
+  text("Quit", 375, 398);
 }
 
-
-export function gameDraw() { //actual game
+export function gameDraw() {
+  //actual game
   strokeWeight(1);
   image(mapImage, 0, 0);
+  if (health <= 0) {
+    //game over screen
+    background(0, 0, 0, 200);
+    fill(255);
+    textSize(80);
+    textAlign(CENTER, CENTER);
+    text("Game Over", Constants.mapWidth / 2, Constants.mapHeight / 2);
+    return;
+  }
 
   for (let tower of towers) {
     if (!tower.obj.isGhost) {
@@ -245,120 +257,122 @@ export function gameDraw() { //actual game
       cars.splice(i, 1);
       if (car.isDead()) {
         currency += car.value();
+      } else if (car.isFinished) {
+        health -= car.currentHealth;
       }
     }
-  }
 
-  for (let i = 0; i < projectiles.length; i++) {
-    const projectile = projectiles[i];
-    projectile.update();
-    projectile.draw();
+    for (let i = 0; i < projectiles.length; i++) {
+      const projectile = projectiles[i];
+      projectile.update();
+      projectile.draw();
 
-    // TODO: Check car collision
-    // Remove a projectile if it is out of bounds.
-    let hitCar = null;
-    for (let car of cars) {
-      if (car.pos.dist(projectile.pos) < car.colliderSize) {
-        hitCar = car;
-        break;
+      // TODO: Check car collision
+      // Remove a projectile if it is out of bounds.
+      let hitCar = null;
+      for (let car of cars) {
+        if (car.pos.dist(projectile.pos) < car.colliderSize) {
+          hitCar = car;
+          break;
+        }
+      }
+      if (hitCar) {
+        hitCar.takeDamage(projectile.damage);
+      }
+      if (hitCar || !inBounds(projectile.pos.x, projectile.pos.y)) {
+        projectiles.splice(i, 1);
+        i--;
       }
     }
-    if (hitCar) {
-      hitCar.takeDamage(projectile.damage);
+
+    if (towerBeingPlaced) {
+      //make ghost tower follow mouse
+      towerBeingPlaced.obj.position.x = mouseX;
+      towerBeingPlaced.obj.position.y = mouseY;
+      towerBeingPlaced.obj.canPlace = canPlaceAt(mouseX, mouseY);
+      towerBeingPlaced.draw();
     }
-    if (hitCar || !inBounds(projectile.pos.x, projectile.pos.y)) {
-      projectiles.splice(i, 1);
-      i--;
-    }
-  }
 
-  if (towerBeingPlaced) {
-    //make ghost tower follow mouse
-    towerBeingPlaced.obj.position.x = mouseX;
-    towerBeingPlaced.obj.position.y = mouseY;
-    towerBeingPlaced.obj.canPlace = canPlaceAt(mouseX, mouseY);
-    towerBeingPlaced.draw();
-  }
-
-  //Menu for towers
-  fill("tan");
-  rect(Constants.mapWidth, 0, Constants.menuWidth, Constants.mapHeight);
-  noFill();
-  // Draw border
-  stroke("black");
-  rect(
-    Constants.mapWidth + Constants.menuBorderPadding,
-    Constants.menuBorderPadding,
-    180,
-    480 - 2 * Constants.menuBorderPadding
-  );
-
-  // --- Draw tower buttons from the menu array ---
-  const menuX = Constants.mapWidth;
-  const col1X = menuX + Constants.menuWidth / 4;
-  const col2X = menuX + (Constants.menuWidth / 4) * 3;
-  const buttonSpacing = 70; // Space between rows
-  const startY = 60; // Top padding
-
-  towerMenu.forEach((towerType, index) => {
-    let col = index % 2;
-    let row = Math.floor(index / 2);
-
-    // TODO: put this in setup somehow, because it doesn't need to be
-    // recalculated every frame.
-    const x = col === 0 ? col1X : col2X;
-    const y = startY + row * buttonSpacing;
-    towerType.menuPos = createVector(x, y);
-
-    // Draw the button icon
-    towerType.drawIcon(x, y);
-
-    // Draw cost
-    fill(0);
-    noStroke();
-    textSize(16);
-    textAlign(CENTER, CENTER);
-    text(`$${towerType.cost}`, x, y + 25);
-  });
-
-  if (towerBeingMenued) {
-    tmenuX = towerBeingMenued.obj.position.x + 20;
-    tmenuY = towerBeingMenued.obj.position.y;
-
-    // Make sure that the menu doesn't go below the screen
-    tmenuY = Math.min(
-      tmenuY,
-      Constants.mapHeight - Constants.towerMenuHeight - 10
-    );
+    //Menu for towers
     fill("tan");
-    rect(tmenuX, tmenuY, Constants.towerMenuWidth, Constants.towerMenuHeight);
-    fill(0, 0, 0);
-    textAlign(LEFT, TOP);
-    text(`${towerBeingMenued.name}`, tmenuX, tmenuY);
-    fill(255, 0, 0);
-    // TODO: make some sort of button asset for this :3
+    rect(Constants.mapWidth, 0, Constants.menuWidth, Constants.mapHeight);
+    noFill();
+    // Draw border
+    stroke("black");
     rect(
-      tmenuX + 10,
-      tmenuY +
-        Constants.towerMenuHeight -
-        Constants.towerMenuCloseButtonSize -
-        10,
-      Constants.towerMenuCloseButtonSize,
-      Constants.towerMenuCloseButtonSize
+      Constants.mapWidth + Constants.menuBorderPadding,
+      Constants.menuBorderPadding,
+      180,
+      480 - 2 * Constants.menuBorderPadding
     );
-  }
 
-  // Draw the lines if debug mode is on
-  if (DEBUG) {
-    stroke(255, 0, 0);
-    for (let i = 0; i < path.length - 1; i++) {
-      line(path[i].x, path[i].y, path[i + 1].x, path[i + 1].y);
+    // --- Draw tower buttons from the menu array ---
+    const menuX = Constants.mapWidth;
+    const col1X = menuX + Constants.menuWidth / 4;
+    const col2X = menuX + (Constants.menuWidth / 4) * 3;
+    const buttonSpacing = 70; // Space between rows
+    const startY = 60; // Top padding
+
+    towerMenu.forEach((towerType, index) => {
+      let col = index % 2;
+      let row = Math.floor(index / 2);
+
+      // TODO: put this in setup somehow, because it doesn't need to be
+      // recalculated every frame.
+      const x = col === 0 ? col1X : col2X;
+      const y = startY + row * buttonSpacing;
+      towerType.menuPos = createVector(x, y);
+
+      // Draw the button icon
+      towerType.drawIcon(x, y);
+
+      // Draw cost
+      fill(0);
+      noStroke();
+      textSize(16);
+      textAlign(CENTER, CENTER);
+      text(`$${towerType.cost}`, x, y + 25);
+    });
+
+    if (towerBeingMenued) {
+      tmenuX = towerBeingMenued.obj.position.x + 20;
+      tmenuY = towerBeingMenued.obj.position.y;
+
+      // Make sure that the menu doesn't go below the screen
+      tmenuY = Math.min(
+        tmenuY,
+        Constants.mapHeight - Constants.towerMenuHeight - 10
+      );
+      fill("tan");
+      rect(tmenuX, tmenuY, Constants.towerMenuWidth, Constants.towerMenuHeight);
+      fill(0, 0, 0);
+      textAlign(LEFT, TOP);
+      text(`${towerBeingMenued.name}`, tmenuX, tmenuY);
+      fill(255, 0, 0);
+      // TODO: make some sort of button asset for this :3
+      rect(
+        tmenuX + 10,
+        tmenuY +
+          Constants.towerMenuHeight -
+          Constants.towerMenuCloseButtonSize -
+          10,
+        Constants.towerMenuCloseButtonSize,
+        Constants.towerMenuCloseButtonSize
+      );
     }
-    for (let car of cars) {
-      stroke(0, 0, 0, 0);
-      fill(255, 255, 0, 100);
-      // Draw car colliders
-      circle(car.pos.x, car.pos.y, car.colliderSize);
+
+    // Draw the lines if debug mode is on
+    if (DEBUG) {
+      stroke(255, 0, 0);
+      for (let i = 0; i < path.length - 1; i++) {
+        line(path[i].x, path[i].y, path[i + 1].x, path[i + 1].y);
+      }
+      for (let car of cars) {
+        stroke(0, 0, 0, 0);
+        fill(255, 255, 0, 100);
+        // Draw car colliders
+        circle(car.pos.x, car.pos.y, car.colliderSize);
+      }
     }
   }
   textAlign(RIGHT, TOP);
@@ -366,6 +380,7 @@ export function gameDraw() { //actual game
   fill(0);
   noStroke();
   text(`Money: $${currency}`, Constants.mapWidth - 10, 10);
+  text(`Health: ${health}`, Constants.mapWidth - 10, 30);
 }
 
 export function spawnCar() {
@@ -399,7 +414,7 @@ export function getNearestCar(x, y) {
 export function mousePressed() {
   const mouseVector = createVector(mouseX, mouseY);
   if (menu) {
-    if ((mouseX > 315 && mouseX < 525) && (mouseY > 150 && mouseY < 215)) {
+    if (mouseX > 315 && mouseX < 525 && mouseY > 150 && mouseY < 215) {
       menu = false;
     }
     return;
@@ -419,7 +434,6 @@ export function mousePressed() {
     }
     return;
   }
-  
 
   let somethingClicked = false;
 
@@ -428,9 +442,9 @@ export function mousePressed() {
   // because i just wrote it twice.
   if (
     mouseX >= tmenuX &&
-      mouseX < tmenuX + Constants.towerMenuWidth &&
-      mouseY >= tmenuY &&
-      mouseY < tmenuY + Constants.towerMenuHeight
+    mouseX < tmenuX + Constants.towerMenuWidth &&
+    mouseY >= tmenuY &&
+    mouseY < tmenuY + Constants.towerMenuHeight
   ) {
     somethingClicked = true;
     // Check if the close button was clicked
@@ -440,16 +454,16 @@ export function mousePressed() {
     const beginX = tmenuX + 10;
     const endX = beginX + Constants.towerMenuCloseButtonSize;
     const beginY =
-          tmenuY +
-          Constants.towerMenuHeight -
-          Constants.towerMenuCloseButtonSize -
-          10;
+      tmenuY +
+      Constants.towerMenuHeight -
+      Constants.towerMenuCloseButtonSize -
+      10;
     const endY = beginY + Constants.towerMenuCloseButtonSize;
     if (
       mouseX >= beginX &&
-        mouseX < endX &&
-        mouseY >= beginY &&
-        mouseY < endY
+      mouseX < endX &&
+      mouseY >= beginY &&
+      mouseY < endY
     ) {
       // Jankily remove the tower
       towers = towers.filter(function (t) {
@@ -463,7 +477,7 @@ export function mousePressed() {
   for (const towerType of towerMenu) {
     if (
       dist(mouseX, mouseY, towerType.menuPos.x, towerType.menuPos.y) <
-        towerType.menuSize / 2
+      towerType.menuSize / 2
     ) {
       towerBeingPlaced = towerType.create();
       if (mouseVector.dist(towerType.menuPos) < towerType.menuSize / 2) {

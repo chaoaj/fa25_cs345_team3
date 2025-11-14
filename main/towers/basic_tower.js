@@ -25,7 +25,7 @@ export function update() {
   // TODO: Add some way of getting a timestamp so this can have a
   // cooldown. As it is now, all towers will fire in sync which is
   // lame. Also frameCount=bad
-  const enoughTimeElapsed = frameCount % 60 === 0;
+  const enoughTimeElapsed = frameCount % 45 === 0;
   // Check whether the nearest car is close enough.
   const distanceToTarget = dist(
     this.obj.target.x,
