@@ -183,7 +183,7 @@ export function draw() { //draws menu until play is clicked, then draws game
 }
 
 export function menuDraw() { //main menu
-background('tan');
+  background('tan');
   stroke(51);
   strokeWeight(2);
   fill('tan');
@@ -206,6 +206,7 @@ background('tan');
 
 
 export function gameDraw() { //actual game
+  strokeWeight(1);
   image(mapImage, 0, 0);
   
   for (let tower of towers) {
