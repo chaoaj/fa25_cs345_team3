@@ -180,18 +180,6 @@ export function setup() {
     createVector(80, 396),
     createVector(657.6, 396),
   ];
-  path2 = [
-    // key shape
-    createVector(100, -20),
-    createVector(100, 100),
-    createVector(500, 100),
-    createVector(500, 200),
-    createVector(100, 200),
-    createVector(100, 300),
-    createVector(375, 300),
-    createVector(375, 400),
-    createVector(-20, 400),
-  ];
 
   path2 = [
     // key shape
