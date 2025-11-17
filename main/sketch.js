@@ -1,49 +1,78 @@
 import * as BasicTower from "./towers/basic_tower.js";
+import { Tower } from "./towers/basic_tower.js";
 import { Car } from "./cars/basic_car.js";
 import * as Constants from "./constants.js";
+import { basicTowerProjectile } from "./projectiles/basic_tower_proj.js";
 
 // Check this variable for any debug displays or features that you want to add.
+/** @type {boolean} */
 let DEBUG = false;
 
+/** @type {Tower[]} */
 let towers = [];
+/** @type {Car[]} */
 export let cars = [];
+/** @type {basicTowerProjectile[]} */
 export let projectiles = [];
 
+/** @type {p5.Vector[]} */
 let path1;
+/** @type {p5.Vector[]} */
 let path2;
+/** @type {p5.Vector[]} */
 let path3;
+/** @type {p5.Vector[]} */
 let path;
 
-let carsPerLevel = 20; // # of cars for first level
+/** # of cars for the first level */
+let carsPerLevel = 20;
 let carsSpawned = 0;
 let spawnTimer = 0; //Countdown time for next spawn
 let currency = 500;
 let health = 100;
 
+/** @type {p5.Image} */
 let mapImage;
+/** @type {p5.Image} */
 let placeImage;
 
 // Tower menu coordinates
+/** @type {number} */
 let tmenuX;
+/** @type {number} */
 let tmenuY;
+
 let menu = true; //draws main menu until false
 
-// Whether a coordinate is in bounds of the screen
+/**
+ * Whether a coordinate is in bounds of the screen.
+ *
+ * @param {number} x
+ * @param {number} y
+ * @returns {boolean}
+ */
 function inBounds(x, y) {
   return (
     x >= 0 && x <= Constants.mapWidth && y >= 0 && y <= Constants.mapHeight
   );
 }
 
-// Checks an image lookup to see if a tower can be placed at
-// position. Green pixel=tower can be placed, red pixel=tower cannot
-// be placed.
+/**
+ * Checks an image lookup to see if a tower can be placed at
+ * position. Green pixel=tower can be placed, red pixel=tower cannot
+ * be placed.
+ *
+ * @param {number} x
+ * @param {number} y
+ * @returns {boolean}
+ */
 function canPlaceAt(x, y) {
   // Return false if the tower is out of bounds.
   if (!inBounds(x, y)) {
     return false;
   }
   // Get the pixel
+  /** @type {number[]} */
   const pixel = placeImage.get(x, y);
   // Get the color channels that we use
   const red = pixel[0];
@@ -53,7 +82,7 @@ function canPlaceAt(x, y) {
   if (green < red) {
     return false;
   }
-  for (let tower of towers) {
+  for (const tower of towers) {
     if (tower == towerBeingPlaced) {
       continue;
     }
@@ -65,11 +94,23 @@ function canPlaceAt(x, y) {
 }
 
 //state variable for tower being dragged
+/** @type {Tower} */
 let towerBeingPlaced = null;
+/** @type {Tower} */
 let towerBeingMenued = null;
 
+/**
+ * @typedef {Object} TowerMenuEntry
+ * @property {string} name
+ * @property {number} cost
+ * @property {(name: string) => Tower} create
+ * @property {(x: number, y: number) => void} drawIcon
+ * @property {number} menuSize The click-able radius
+ * @property {p5.Vector} menuPos the menu position
+ */
 // --- NEW: Data-driven array for the tower menu ---
 // To add a new tower, just add a new object to this array.
+/** @type {TowerMenuEntry[]} */
 const towerMenu = [
   {
     name: "Basic Tower",
@@ -88,11 +129,8 @@ const towerMenu = [
       pop();
     },
     // These will be populated by the draw() loop
-    menuX: 0,
-    menuY: 0,
-    menuSize: 40, // The click-able radius
+    menuSize: 40,
     menuPos: null,
-    menuSize: 40, // The click-able radius
   },
   // --- EXAMPLE: Add a new tower here ---
   // {
@@ -231,12 +269,12 @@ export function gameDraw() {
     return;
   }
 
-  for (let tower of towers) {
+  for (const tower of towers) {
     if (!tower.obj.isGhost) {
       tower.update();
     }
   }
-  for (let tower of towers) {
+  for (const tower of towers) {
     tower.draw();
   }
 
@@ -248,7 +286,7 @@ export function gameDraw() {
   }
 
   for (let i = cars.length - 1; i >= 0; i--) {
-    let car = cars[i];
+    const car = cars[i];
     car.update();
     car.draw();
 
@@ -261,118 +299,117 @@ export function gameDraw() {
         health -= car.currentHealth;
       }
     }
+  }
 
-    for (let i = 0; i < projectiles.length; i++) {
-      const projectile = projectiles[i];
-      projectile.update();
-      projectile.draw();
-
-      // TODO: Check car collision
-      // Remove a projectile if it is out of bounds.
-      let hitCar = null;
-      for (let car of cars) {
-        if (car.pos.dist(projectile.pos) < car.colliderSize) {
-          hitCar = car;
-          break;
-        }
-      }
-      if (hitCar) {
-        hitCar.takeDamage(projectile.damage);
-      }
-      if (hitCar || !inBounds(projectile.pos.x, projectile.pos.y)) {
-        projectiles.splice(i, 1);
-        i--;
+  for (let i = 0; i < projectiles.length; i++) {
+    const projectile = projectiles[i];
+    projectile.update();
+    projectile.draw();
+    
+    // Remove a projectile if it is out of bounds.
+    let hitCar = null;
+    for (const car of cars) {
+      if (car.pos.dist(projectile.pos) < car.colliderSize) {
+        hitCar = car;
+        break;
       }
     }
-
-    if (towerBeingPlaced) {
-      //make ghost tower follow mouse
-      towerBeingPlaced.obj.position.x = mouseX;
-      towerBeingPlaced.obj.position.y = mouseY;
-      towerBeingPlaced.obj.canPlace = canPlaceAt(mouseX, mouseY);
-      towerBeingPlaced.draw();
+    if (hitCar) {
+      hitCar.takeDamage(projectile.damage);
     }
-
-    //Menu for towers
-    fill("tan");
-    rect(Constants.mapWidth, 0, Constants.menuWidth, Constants.mapHeight);
-    noFill();
-    // Draw border
-    stroke("black");
-    rect(
-      Constants.mapWidth + Constants.menuBorderPadding,
-      Constants.menuBorderPadding,
-      180,
-      480 - 2 * Constants.menuBorderPadding
+    if (hitCar || !inBounds(projectile.pos.x, projectile.pos.y)) {
+      projectiles.splice(i, 1);
+      i--;
+    }
+  }
+  
+  if (towerBeingPlaced) {
+    //make ghost tower follow mouse
+    towerBeingPlaced.obj.position.x = mouseX;
+    towerBeingPlaced.obj.position.y = mouseY;
+    towerBeingPlaced.obj.canPlace = canPlaceAt(mouseX, mouseY);
+    towerBeingPlaced.draw();
+  }
+  
+  //Menu for towers
+  fill("tan");
+  rect(Constants.mapWidth, 0, Constants.menuWidth, Constants.mapHeight);
+  noFill();
+  // Draw border
+  stroke("black");
+  rect(
+    Constants.mapWidth + Constants.menuBorderPadding,
+    Constants.menuBorderPadding,
+    180,
+    480 - 2 * Constants.menuBorderPadding
+  );
+  
+  // --- Draw tower buttons from the menu array ---
+  const menuX = Constants.mapWidth;
+  const col1X = menuX + Constants.menuWidth / 4;
+  const col2X = menuX + (Constants.menuWidth / 4) * 3;
+  const buttonSpacing = 70; // Space between rows
+  const startY = 60; // Top padding
+  
+  towerMenu.forEach((towerType, index) => {
+    let col = index % 2;
+    let row = Math.floor(index / 2);
+    
+    // TODO: put this in setup somehow, because it doesn't need to be
+    // recalculated every frame.
+    const x = col === 0 ? col1X : col2X;
+    const y = startY + row * buttonSpacing;
+    towerType.menuPos = createVector(x, y);
+    
+    // Draw the button icon
+    towerType.drawIcon(x, y);
+    
+    // Draw cost
+    fill(0);
+    noStroke();
+    textSize(16);
+    textAlign(CENTER, CENTER);
+    text(`$${towerType.cost}`, x, y + 25);
+  });
+  
+  if (towerBeingMenued) {
+    tmenuX = towerBeingMenued.obj.position.x + 20;
+    tmenuY = towerBeingMenued.obj.position.y;
+    
+    // Make sure that the menu doesn't go below the screen
+    tmenuY = Math.min(
+      tmenuY,
+      Constants.mapHeight - Constants.towerMenuHeight - 10
     );
-
-    // --- Draw tower buttons from the menu array ---
-    const menuX = Constants.mapWidth;
-    const col1X = menuX + Constants.menuWidth / 4;
-    const col2X = menuX + (Constants.menuWidth / 4) * 3;
-    const buttonSpacing = 70; // Space between rows
-    const startY = 60; // Top padding
-
-    towerMenu.forEach((towerType, index) => {
-      let col = index % 2;
-      let row = Math.floor(index / 2);
-
-      // TODO: put this in setup somehow, because it doesn't need to be
-      // recalculated every frame.
-      const x = col === 0 ? col1X : col2X;
-      const y = startY + row * buttonSpacing;
-      towerType.menuPos = createVector(x, y);
-
-      // Draw the button icon
-      towerType.drawIcon(x, y);
-
-      // Draw cost
-      fill(0);
-      noStroke();
-      textSize(16);
-      textAlign(CENTER, CENTER);
-      text(`$${towerType.cost}`, x, y + 25);
-    });
-
-    if (towerBeingMenued) {
-      tmenuX = towerBeingMenued.obj.position.x + 20;
-      tmenuY = towerBeingMenued.obj.position.y;
-
-      // Make sure that the menu doesn't go below the screen
-      tmenuY = Math.min(
-        tmenuY,
-        Constants.mapHeight - Constants.towerMenuHeight - 10
-      );
-      fill("tan");
-      rect(tmenuX, tmenuY, Constants.towerMenuWidth, Constants.towerMenuHeight);
-      fill(0, 0, 0);
-      textAlign(LEFT, TOP);
-      text(`${towerBeingMenued.name}`, tmenuX, tmenuY);
-      fill(255, 0, 0);
-      // TODO: make some sort of button asset for this :3
-      rect(
-        tmenuX + 10,
-        tmenuY +
-          Constants.towerMenuHeight -
-          Constants.towerMenuCloseButtonSize -
-          10,
-        Constants.towerMenuCloseButtonSize,
-        Constants.towerMenuCloseButtonSize
-      );
+    fill("tan");
+    rect(tmenuX, tmenuY, Constants.towerMenuWidth, Constants.towerMenuHeight);
+    fill(0, 0, 0);
+    textAlign(LEFT, TOP);
+    text(`${towerBeingMenued.name}`, tmenuX, tmenuY);
+    fill(255, 0, 0);
+    // TODO: make some sort of button asset for this :3
+    rect(
+      tmenuX + 10,
+      tmenuY +
+        Constants.towerMenuHeight -
+        Constants.towerMenuCloseButtonSize -
+        10,
+      Constants.towerMenuCloseButtonSize,
+      Constants.towerMenuCloseButtonSize
+    );
+  }
+  
+  // Draw the lines if debug mode is on
+  if (DEBUG) {
+    stroke(255, 0, 0);
+    for (let i = 0; i < path.length - 1; i++) {
+      line(path[i].x, path[i].y, path[i + 1].x, path[i + 1].y);
     }
-
-    // Draw the lines if debug mode is on
-    if (DEBUG) {
-      stroke(255, 0, 0);
-      for (let i = 0; i < path.length - 1; i++) {
-        line(path[i].x, path[i].y, path[i + 1].x, path[i + 1].y);
-      }
-      for (let car of cars) {
-        stroke(0, 0, 0, 0);
-        fill(255, 255, 0, 100);
-        // Draw car colliders
-        circle(car.pos.x, car.pos.y, car.colliderSize);
-      }
+    for (let car of cars) {
+      stroke(0, 0, 0, 0);
+      fill(255, 255, 0, 100);
+      // Draw car colliders
+      circle(car.pos.x, car.pos.y, car.colliderSize);
     }
   }
   textAlign(RIGHT, TOP);
@@ -385,7 +422,7 @@ export function gameDraw() {
 
 export function spawnCar() {
   //create new car with created path
-  let newCar = new Car(path2, random(1, 2.5), 100);
+  const newCar = new Car(path2, random(1, 2.5), 100);
   cars.push(newCar);
 }
 
@@ -397,11 +434,11 @@ export function setNextSpawnTimer() {
 // yet to be implemented. takes a position, returns the nearest car
 // object, whatever that looks like.
 export function getNearestCar(x, y) {
-  let pos = createVector(x, y);
+  const pos = createVector(x, y);
   let nearestCar = createVector(Infinity, Infinity);
   let dist = pos.dist(nearestCar);
   for (let car of cars) {
-    let carDist = pos.dist(car.pos);
+    const carDist = pos.dist(car.pos);
     if (carDist < dist) {
       nearestCar = car.pos;
       dist = carDist;
@@ -509,33 +546,3 @@ export function mousePressed() {
   }
 }
 
-// Tower constructor. could be called like new Tower(whatever)
-function Tower(draw, update, name) {
-  // called every frame to draw // TODO: he tower on the screen maybe takes
-  // a position, or maybe uses the position stored in the object
-  this.draw = draw;
-  // runs the actual game code, called every frame.
-  //
-  // for the basic tower, this would probably get a timestamp, and
-  // compare it to a local variable lastFiredTimestamp. if the
-  // difference is greater than a second, call getNearestCar. If its
-  // within a certain radius, fire a new Projectile() with the
-  // position of the tower, and with a velocity pointing towards the
-  // car. then, update lastFiredTimestamp to the current timestamp,
-  // so that a second or so will be waited again.
-  this.update = update;
-  this.name = name;
-  // local data for this tower; varies between towers; composition
-  // over inheritance!
-  this.obj = {};
-  // Other possible properties:
-  //  • position	- (x,y) coordinates
-  //  • cost		- how much it costs to place it
-  //  • upgrades	- some structure for the upgrades?
-  //  • name          - what type of tower it is. might be used somewhere
-  //  • isGhost       - while a tower is being placed, it is shown on the
-  //                    screen, but it shouldn't fire at anything. if this
-  //                    is true, then the tower doesn't actually exist,
-  //                    and shouldn't fire or anything.
-  // would have to have other code implemented to know what we need.
-}

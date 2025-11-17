@@ -2,28 +2,55 @@
 //import { cars } from "../sketch.js";
 
 export class Car {
-  // Size of the collision circle of the car.
+  /**
+   * Size of the collision circle of the car.
+   * 
+   * @type {number}
+   */
   colliderSize = 30;
 
+  /**
+   * Returns an object with all of the car's data.
+   *
+   * @param {p5.Vector[]} path The path that the car follows
+   * @param {number} speed How fast the car is
+   * @param {number} health how much damage the car can take before it breaks
+   */
   constructor(path, speed = 2, health = 50) {
-    // returns object with all of cars data
-
+    /** The path that the car follows @property {p5.Vector[]} */
     this.path = path;
+    /** The current position of the car @property {Vector} */
     this.pos = path[0].copy();
+    /**
+     * Which entry in the path the car is moving towards.
+     * 
+     * @property {number}
+     * @see path
+     */
     this.targetWaypointIndex = 1;
+    /** How fast the car moves. @property {number} */
     this.speed = speed;
+    /** The velocity of the car @property {p5.Vector} */
     this.velocity = createVector(0, 0);
+    /** Whether the car has reached the end or not @property {boolean} */
     this.isFinished = false;
 
     // health tracking attributes
+    /** The total health that the car starts with. @property {number} */
     this.maxHealth = health;
+    /** How much health the car has right now. @property {number} */
     this.currentHealth = health;
 
     // Shape and appearances
+    /** @property {number} */
     this.bodyWidth = 25;
+    /** @property {number} */
     this.bodyHeight = 14;
+    /** @property {p5.Color} */
     this.bodyColor = color("red");
+    /** @property {p5.Color} */
     this.windowColor = color("grey");
+    /** @property {p5.Color} */
     this.tireColor = color("black");
   }
 
