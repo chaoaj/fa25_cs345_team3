@@ -55,7 +55,7 @@ let towerBeingPlaced = null;
 const towerMenu = [
   {
     name: "Basic Tower",
-    cost: 0,
+    cost: BasicTower.cost,
     // This function creates the actual tower object
     create: () => new Tower(BasicTower.draw, BasicTower.update),
     // This function draws the icon in the menu
@@ -207,7 +207,10 @@ export function draw() {
     projectile.update();
     projectile.draw();
 
+<<<<<<< Updated upstream
     // TODO: Check car collision
+=======
+>>>>>>> Stashed changes
     // Remove a projectile if it is out of bounds.
     let hitCar = null;
     for (let car of cars) {
@@ -257,11 +260,19 @@ export function draw() {
     let col = index % 2;
     let row = Math.floor(index / 2);
 
+<<<<<<< Updated upstream
     // Calculate and store the button's position
     let x = col === 0 ? col1X : col2X;
     let y = startY + row * buttonSpacing;
     towerType.menuX = x;
     towerType.menuY = y;
+=======
+    // TODO: put this in setup somehow, because it doesn't need to be
+    // recalculated every frame.
+    const x = col === 0 ? col1X : col2X;
+    const y = startY + row * buttonSpacing;
+    towerType.menuPos = createVector(x, y);
+>>>>>>> Stashed changes
 
     // Draw the button icon
     towerType.drawIcon(x, y);
@@ -273,6 +284,36 @@ export function draw() {
     text(`$${towerType.cost}`, x, y + 25);
   });
 
+<<<<<<< Updated upstream
+=======
+  if (towerBeingMenued) {
+    tmenuX = towerBeingMenued.obj.position.x + 20;
+    tmenuY = towerBeingMenued.obj.position.y;
+
+    // Make sure that the menu doesn't go below the screen
+    tmenuY = Math.min(
+      tmenuY,
+      Constants.mapHeight - Constants.towerMenuHeight - 10
+    );
+    fill("tan");
+    rect(tmenuX, tmenuY, Constants.towerMenuWidth, Constants.towerMenuHeight);
+    fill(0, 0, 0);
+    textAlign(LEFT, TOP);
+    text(`${towerBeingMenued.name}`, tmenuX, tmenuY);
+    fill(255, 0, 0);
+    // TODO: make some sort of button asset for this :3
+    rect(
+      tmenuX + 10,
+      tmenuY +
+        Constants.towerMenuHeight -
+        Constants.towerMenuCloseButtonSize -
+        10,
+      Constants.towerMenuCloseButtonSize,
+      Constants.towerMenuCloseButtonSize
+    );
+  }
+
+>>>>>>> Stashed changes
   // Draw the lines if debug mode is on
   if (DEBUG) {
     stroke(255, 0, 0);
@@ -323,11 +364,26 @@ export function getNearestCar(x, y) {
 
 //Function to add mouse pressed functionality
 export function mousePressed() {
+<<<<<<< Updated upstream
   if (towerBeingPlaced !== null) {
     if (canPlaceAt(mouseX, mouseY)) {
+=======
+  const mouseVector = createVector(mouseX, mouseY);
+  if (menu) {
+    if (mouseX > 315 && mouseX < 525 && mouseY > 150 && mouseY < 215) {
+      menu = false;
+    }
+    return;
+  }
+  // If there is a tower being placed, then clicking the mouse should
+  // place the tower
+  if (towerBeingPlaced && towerBeingPlaced.cost <= currency) {
+    if (canPlaceAt(mouseVector.x, mouseVector.y)) {
+>>>>>>> Stashed changes
       towerBeingPlaced.obj.isGhost = false;
       towerBeingPlaced.obj.position = createVector(mouseX, mouseY);
       towers.push(towerBeingPlaced);
+      currency -= towerBeingPlaced.cost;
       towerBeingPlaced = null;
     } else if (mouseX >= 640) {
       // Remove ghost tower if the tower is being placed back in the
@@ -351,6 +407,7 @@ export function mousePressed() {
     }
   }
 }
+<<<<<<< Updated upstream
 
 // Tower constructor. could be called like new Tower(whatever)
 function Tower(draw, update) {
@@ -386,3 +443,5 @@ function Tower(draw, update) {
 //function placeTower(tower, x, y) {
 
 //}
+=======
+>>>>>>> Stashed changes

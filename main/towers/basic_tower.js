@@ -8,11 +8,66 @@ export const bodyColor = [255, 0, 0];
 export const turretColor = [200, 200, 200];
 export const bodyCircleSize = 25;
 export const bodyTurretSize = [-5, -5, 30, 10];
+export const cost = 100;
 
 // How many pixels away the tower can shoot
 const firingRange = 200;
 
+<<<<<<< Updated upstream
 // this method should fire a projectile at the nearest/first car
+=======
+/**
+ * @typedef {Object} TowerLocalData
+ * @property {p5.Vector} position Where the tower is.
+ * @property {boolean} isGhost True if the tower is being placed right now.
+ * @property {boolean} canPlace True if the tower can be placed at the current position.
+ * @property {p5.Vector} target Where the tower is aiming at.
+ * @property {number} cost How much the tower costs.
+ */
+
+/**
+ * Tower constructor. could be called like new Tower(whatever).
+ *
+ * @param {() => void} draw The function to draw the tower.
+ * @param {() => void} update The function to update the tower.
+ * @param {string} name What the name of the tower type is.
+ */
+export function Tower(draw, update, name) {
+  /**
+   * Called every frame to draw.
+   *
+   * @property {() => void}
+   */
+  this.draw = draw;
+  /** runs the actual game code, called every frame. @property {() => void} */
+  this.update = update;
+  /** The name of the tower type @type {() => void} */
+  this.name = name;
+  // local data for this tower; varies between towers; composition
+  // over inheritance!
+  /** Local data for the tower @type {TowerLocalData} */
+  this.obj = {};
+  // Other possible properties:
+  //  • position	- (x,y) coordinates
+  //  • cost		- how much it costs to place it
+  //  • upgrades	- some structure for the upgrades?
+  //  • name          - what type of tower it is. might be used somewhere
+  //  • isGhost       - while a tower is being placed, it is shown on the
+  //                    screen, but it shouldn't fire at anything. if this
+  //                    is true, then the tower doesn't actually exist,
+  //                    and shouldn't fire or anything.
+  // would have to have other code implemented to know what we need.
+  this.cost = cost;
+}
+
+
+/**
+ * This method should fire a projectile at the nearest/first car
+ *
+ * @param {p5.Vector} pos the position to start the projectile at.
+ * @param {p5.Vector} target where the projectile is aimed at.
+ */
+>>>>>>> Stashed changes
 export function fire(pos, target) {
   // This code isn't going to work, make a projectiles array in
   // sketch.js or something, push to that, and call proj.draw in draw
@@ -20,6 +75,14 @@ export function fire(pos, target) {
   projectiles.push(proj);
 }
 
+<<<<<<< Updated upstream
+=======
+/**
+ * Update function for the tower
+ *
+ * @this Tower
+ */
+>>>>>>> Stashed changes
 export function update() {
   this.obj.target = getNearestCar(this.obj.position.x, this.obj.position.y);
   // TODO: Add some way of getting a timestamp so this can have a
@@ -47,6 +110,14 @@ function tintColor(base, tint, n) {
   return ret;
 }
 
+<<<<<<< Updated upstream
+=======
+/**
+ * Draw function for the tower
+ *
+ * @this Tower
+ */
+>>>>>>> Stashed changes
 export function draw() {
   let localBodyColor;
   let localTurretColor;
