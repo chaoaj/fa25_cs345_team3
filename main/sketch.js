@@ -8,6 +8,9 @@ import { basicTowerProjectile } from "./projectiles/basic_tower_proj.js";
 /** @type {boolean} */
 let DEBUG = false;
 
+/** @type {boolean} */
+let paused = false;
+
 /** @type {Tower[]} */
 let towers = [];
 /** @type {Car[]} */
@@ -158,9 +161,14 @@ export function preload() {
 export function setup() {
   const debugCheckbox = document.querySelector("#debug");
   DEBUG = debugCheckbox.checked;
-  debugCheckbox.oninput = function () {
+  debugCheckbox.oninput = function() {
     DEBUG = debugCheckbox.checked;
   };
+  const pauseCheckbox = document.querySelector("#pause");
+  paused = pauseCheckbox.checked;
+  pauseCheckbox.oninput = function() {
+    paused = pauseCheckbox.checked;
+  }
   createCanvas(Constants.mapWidth + Constants.menuWidth, Constants.mapHeight);
 
   path1 = [
@@ -270,7 +278,7 @@ export function gameDraw() {
   }
 
   for (const tower of towers) {
-    if (!tower.obj.isGhost) {
+    if (!paused && !tower.obj.isGhost) {
       tower.update();
     }
   }
@@ -278,56 +286,68 @@ export function gameDraw() {
     tower.draw();
   }
 
-  spawnTimer--;
-  if (spawnTimer <= 0 && carsSpawned < carsPerLevel) {
-    spawnCar();
-    carsSpawned++;
-    setNextSpawnTimer();
+  if (!paused) {
+    spawnTimer--;
+    if (spawnTimer <= 0 && carsSpawned < carsPerLevel) {
+      spawnCar();
+      carsSpawned++;
+      setNextSpawnTimer();
+    }
   }
 
   for (let i = cars.length - 1; i >= 0; i--) {
     const car = cars[i];
-    car.update();
+    if (!paused) {
+      car.update();
+    }
     car.draw();
 
-    //Remove car from array at death or end of map
-    if (car.isFinished || car.isDead()) {
-      cars.splice(i, 1);
-      if (car.isDead()) {
-        currency += car.value();
-      } else if (car.isFinished) {
-        health -= car.currentHealth;
+    if (!paused) {
+      //Remove car from array at death or end of map
+      if (car.isFinished || car.isDead()) {
+        cars.splice(i, 1);
+        if (car.isDead()) {
+          currency += car.value();
+        } else if (car.isFinished) {
+          health -= car.currentHealth;
+        }
       }
     }
   }
 
   for (let i = 0; i < projectiles.length; i++) {
     const projectile = projectiles[i];
-    projectile.update();
+    if (!paused) {
+      projectile.update();
+    }
     projectile.draw();
-    
-    // Remove a projectile if it is out of bounds.
-    let hitCar = null;
-    for (const car of cars) {
-      if (car.pos.dist(projectile.pos) < car.colliderSize) {
-        hitCar = car;
-        break;
+
+    if (!paused) {
+      // Remove a projectile if it is out of bounds.
+      let hitCar = null;
+      for (const car of cars) {
+        if (car.pos.dist(projectile.pos) < car.colliderSize) {
+          hitCar = car;
+          break;
+        }
       }
-    }
-    if (hitCar) {
-      hitCar.takeDamage(projectile.damage);
-    }
-    if (hitCar || !inBounds(projectile.pos.x, projectile.pos.y)) {
-      projectiles.splice(i, 1);
-      i--;
+      if (hitCar) {
+        hitCar.takeDamage(projectile.damage);
+      }
+      if (hitCar || !inBounds(projectile.pos.x, projectile.pos.y)) {
+        projectiles.splice(i, 1);
+        i--;
+      }
     }
   }
   
   if (towerBeingPlaced) {
     //make ghost tower follow mouse
-    towerBeingPlaced.obj.position.x = mouseX;
-    towerBeingPlaced.obj.position.y = mouseY;
-    towerBeingPlaced.obj.canPlace = canPlaceAt(mouseX, mouseY);
+    if (!paused) {
+      towerBeingPlaced.obj.position.x = mouseX;
+      towerBeingPlaced.obj.position.y = mouseY;
+      towerBeingPlaced.obj.canPlace = canPlaceAt(mouseX, mouseY);
+    }
     towerBeingPlaced.draw();
   }
   
@@ -449,6 +469,9 @@ export function getNearestCar(x, y) {
 
 //Function to add mouse pressed functionality
 export function mousePressed() {
+  if (paused) {
+    return;
+  }
   const mouseVector = createVector(mouseX, mouseY);
   if (menu) {
     if (mouseX > 315 && mouseX < 525 && mouseY > 150 && mouseY < 215) {
@@ -530,7 +553,7 @@ export function mousePressed() {
 
     // If nothing was clicked so far, check if any tower was clicked
     if (!somethingClicked) {
-      for (let tower of towers) {
+      for (const tower of towers) {
         //                                         TODO: get rid of this magic number
         if (mouseVector.dist(tower.obj.position) < 30) {
           towerBeingMenued = tower;
