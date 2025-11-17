@@ -256,13 +256,7 @@ export function gameDraw() {
   strokeWeight(1);
   image(mapImage, 0, 0);
   if (health <= 0) {
-    //game over screen
-    background(0, 0, 0, 200);
-    fill(255);
-    textSize(80);
-    textAlign(CENTER, CENTER);
-    text("Game Over", Constants.mapWidth / 2, Constants.mapHeight / 2);
-    return;
+    paused = true;
   }
 
   for (const tower of towers) {
@@ -426,6 +420,15 @@ export function gameDraw() {
   noStroke();
   text(`Money: $${currency}`, Constants.mapWidth - 10, 10);
   text(`Health: ${health}`, Constants.mapWidth - 10, 30);
+  if (health <= 0) {
+    //game over screen
+    background(0, 0, 0, 200);
+    fill(255);
+    textSize(80);
+    textAlign(CENTER, CENTER);
+    text("Game Over", Constants.mapWidth / 2, Constants.mapHeight / 2);
+    return;
+  }
 }
 
 export function spawnCar() {
