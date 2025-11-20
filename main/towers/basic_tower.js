@@ -8,6 +8,7 @@ export const bodyColor = [255, 0, 0];
 export const turretColor = [200, 200, 200];
 export const bodyCircleSize = 25;
 export const bodyTurretSize = [-5, -5, 30, 10];
+export const cost = 140;
 
 // How many pixels away the tower can shoot
 const firingRange = 200;
@@ -18,6 +19,7 @@ const firingRange = 200;
  * @property {boolean} isGhost True if the tower is being placed right now.
  * @property {boolean} canPlace True if the tower can be placed at the current position.
  * @property {p5.Vector} target Where the tower is aiming at.
+ * @property {number} cost How much the tower costs.
  */
 
 /**
@@ -68,7 +70,7 @@ export function fire(pos, target) {
 
 /**
  * Update function for the tower
- * 
+ *
  * @this Tower
  */
 export function update() {
@@ -102,7 +104,7 @@ function tintColor(base, tint, n) {
 
 /**
  * Draw function for the tower
- * 
+ *
  * @this Tower
  */
 export function draw() {

@@ -126,7 +126,7 @@ let towerBeingMenued = null;
 const towerMenu = [
   {
     name: "Basic Tower",
-    cost: 0,
+    cost: BasicTower.cost,
     // This function creates the actual tower object
     create: (name) => new Tower(BasicTower.draw, BasicTower.update, name),
     // This function draws the icon in the menu
@@ -350,7 +350,7 @@ export function gameDraw() {
       }
     }
   }
-  
+
   if (towerBeingPlaced) {
     //make ghost tower follow mouse
     if (!paused) {
@@ -360,7 +360,7 @@ export function gameDraw() {
     }
     towerBeingPlaced.draw();
   }
-  
+
   //Menu for towers
   fill("tan");
   rect(Constants.mapWidth, 0, Constants.menuWidth, Constants.mapHeight);
@@ -373,27 +373,27 @@ export function gameDraw() {
     180,
     480 - 2 * Constants.menuBorderPadding
   );
-  
+
   // --- Draw tower buttons from the menu array ---
   const menuX = Constants.mapWidth;
   const col1X = menuX + Constants.menuWidth / 4;
   const col2X = menuX + (Constants.menuWidth / 4) * 3;
   const buttonSpacing = 70; // Space between rows
   const startY = 60; // Top padding
-  
+
   towerMenu.forEach((towerType, index) => {
     let col = index % 2;
     let row = Math.floor(index / 2);
-    
+
     // TODO: put this in setup somehow, because it doesn't need to be
     // recalculated every frame.
     const x = col === 0 ? col1X : col2X;
     const y = startY + row * buttonSpacing;
     towerType.menuPos = createVector(x, y);
-    
+
     // Draw the button icon
     towerType.drawIcon(x, y);
-    
+
     // Draw cost
     fill(0);
     noStroke();
@@ -401,11 +401,11 @@ export function gameDraw() {
     textAlign(CENTER, CENTER);
     text(`$${towerType.cost}`, x, y + 25);
   });
-  
+
   if (towerBeingMenued) {
     tmenuX = towerBeingMenued.obj.position.x + 20;
     tmenuY = towerBeingMenued.obj.position.y;
-    
+
     // Make sure that the menu doesn't go below the screen
     tmenuY = Math.min(
       tmenuY,
@@ -428,7 +428,7 @@ export function gameDraw() {
       Constants.towerMenuCloseButtonSize
     );
   }
-  
+
   // Draw the lines if debug mode is on
   if (DEBUG) {
     stroke(255, 0, 0);
@@ -561,6 +561,7 @@ export function mousePressed() {
       towerBeingPlaced.obj.isGhost = false;
       towerBeingPlaced.obj.position = mouseVector.copy();
       towers.push(towerBeingPlaced);
+      currency -= towerMenu[towerMenu.length - 1].cost;
       towerBeingPlaced = null;
     } else if (mouseVector.x >= Constants.mapWidth) {
       // Remove ghost tower if the tower is being placed back in the
@@ -612,7 +613,7 @@ export function mousePressed() {
   for (const towerType of towerMenu) {
     if (
       dist(mouseX, mouseY, towerType.menuPos.x, towerType.menuPos.y) <
-      towerType.menuSize / 2
+      towerType.menuSize / 2 && currency >= towerType.cost
     ) {
       towerBeingPlaced = towerType.create();
       if (mouseVector.dist(towerType.menuPos) < towerType.menuSize / 2) {
@@ -643,4 +644,3 @@ export function mousePressed() {
     }
   }
 }
-
