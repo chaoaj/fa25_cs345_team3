@@ -27,12 +27,26 @@ let path3;
 /** @type {p5.Vector[]} */
 let path;
 
-/** # of cars for the first level */
-let carsPerLevel = 20;
-let carsSpawned = 0;
-let spawnTimer = 0; //Countdown time for next spawn
 let currency = 500;
 let health = 100;
+
+let lastSpawn = 0;
+let time = 0;
+let carSpawnI = 0;
+
+
+function s(x) {
+  return x * 1000;
+}
+
+function w(x) {
+  return -s(x);
+}
+
+let carSpawns = [
+  w(7), s(1), s(1), s(1), s(1),
+  w(0.5), s(0.5), s(0.5), s(0.5), s(0.5),
+];
 
 /** @type {p5.Image} */
 let mapImage;
@@ -269,11 +283,23 @@ export function gameDraw() {
   }
 
   if (!paused) {
-    spawnTimer--;
-    if (spawnTimer <= 0 && carsSpawned < carsPerLevel) {
-      spawnCar();
-      carsSpawned++;
-      setNextSpawnTimer();
+    if (carSpawnI < carSpawns.length) {
+      let waitSpawnTimerFoo = carSpawns[carSpawnI];
+      let skip = false;
+      if (waitSpawnTimerFoo < 0) {
+        if (cars.length > 0) {
+          skip = true;
+          lastSpawn = time;
+        }
+        waitSpawnTimerFoo = Math.abs(waitSpawnTimerFoo);
+      }
+      if (!skip) {
+        if (time - lastSpawn > waitSpawnTimerFoo) {
+          lastSpawn = time;
+          carSpawnI += 1;
+          spawnCar();
+        }
+      }
     }
   }
 
@@ -429,11 +455,12 @@ export function gameDraw() {
     text("Game Over", Constants.mapWidth / 2, Constants.mapHeight / 2);
     return;
   }
+  time += deltaTime;
 }
 
 export function spawnCar() {
   //create new car with created path
-  const newCar = new Car(path2, random(1, 2.5), 100);
+  const newCar = new Car(path, random(1, 2.5), 100);
   cars.push(newCar);
 }
 
