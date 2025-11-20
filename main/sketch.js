@@ -50,8 +50,14 @@ let carSpawns = [
 
 /** @type {p5.Image} */
 let mapImage;
+let mapImage1;
+let mapImage2;
+let magImage3;
 /** @type {p5.Image} */
 let placeImage;
+let placeImage1;
+let placeImage2;
+let placeImage3;
 
 // Tower menu coordinates
 /** @type {number} */
@@ -59,7 +65,10 @@ let tmenuX;
 /** @type {number} */
 let tmenuY;
 
-let menu = true; //draws main menu until false
+let menu = true; //runs menudraw until false
+let mainMenu = true; //runs menudraw on menu
+let credits = false; //says that credits was pressed
+let levelSelect = false; //says that levelSelect was pressed
 
 /**
  * Whether a coordinate is in bounds of the screen.
@@ -168,8 +177,10 @@ const towerMenu = [
 ];
 
 export function preload() {
-  mapImage = loadImage("./assets/board2.png");
-  placeImage = loadImage("./assets/board2_placemap.png");
+  mapImage1 = loadImage("./assets/board_demo.png");
+  placeImage1 = loadImage("./assets/board_demo.png");
+  mapImage2 = loadImage("./assets/board2.png");
+  placeImage2 = loadImage("./assets/board2_placemap.png");
 }
 
 export function setup() {
@@ -210,25 +221,18 @@ export function setup() {
 
   path3 = [
     // 4 corners
-    createVector(280, -20),
-    createVector(280, 175),
-    createVector(75, 175),
-    createVector(75, 75),
-    createVector(175, 75),
+    createVector(-20, 305),
+    createVector(175, 305),
     createVector(175, 405),
     createVector(75, 405),
-    createVector(75, 305),
-    createVector(565, 305),
-    createVector(565, 405),
-    createVector(465, 405),
+    createVector(75, 255),
+    createVector(465, 255),
     createVector(465, 75),
     createVector(565, 75),
     createVector(565, 175),
     createVector(360, 175),
     createVector(360, -20),
   ];
-
-  path = path2; // set equal to whatever level player is on
 
   setNextSpawnTimer();
 }
@@ -248,21 +252,45 @@ export function menuDraw() {
   stroke(51);
   strokeWeight(2);
   fill("tan");
+  textAlign(CENTER, BASELINE);
+  if (mainMenu) {
+    //buttons
+    rect(315, 150, 210, 65); //start
+    rect(315, 250, 210, 65); //credits
+    rect(315, 350, 210, 65); //quit
 
-  //buttons
-  rect(315, 150, 210, 65); //start
-  rect(315, 250, 210, 65); //credits
-  rect(315, 350, 210, 65); //quit
+    //title line
+    line(210, 125, 630, 125);
 
-  //title line
-  line(210, 125, 630, 125);
+    //text
+    fill(255);
+    textSize(40);
+    text("Start", 420, 198);
+    text("Credits", 420, 298);
+    text("Levels", 420, 398);
+    textSize(50);
+    text("RoadRagerz", 420, 125);
+  }
 
-  //text
-  fill(255);
-  textSize(40);
-  text("Start", 370, 198);
-  text("Credits", 355, 298);
-  text("Quit", 375, 398);
+  if (credits) {
+    rect(315, 350, 210, 65); //return to menu button
+
+    //text
+    fill(255);
+    text("Return", 420, 398);
+  }
+
+  if (levelSelect) {
+    rect(315, 150, 210, 65); //level 1
+    rect(315, 250, 210, 65); //level 2
+    rect(315, 350, 210, 65); //level 3
+
+    fill(255);
+    textSize(40);
+    text("Level 1", 420, 198);
+    text("Level 2", 420, 298);
+    text("Level 3", 420, 398);
+  }
 }
 
 export function gameDraw() {
@@ -490,13 +518,69 @@ export function mousePressed() {
   if (paused) {
     return;
   }
+
   const mouseVector = createVector(mouseX, mouseY);
+  
   if (menu) {
-    if (mouseX > 315 && mouseX < 525 && mouseY > 150 && mouseY < 215) {
-      menu = false;
+    if (mainMenu) {
+      //start
+      if ((mouseX > 315 && mouseX < 525) && (mouseY > 150 && mouseY < 215)) {
+        path = path1;
+        mapImage = mapImage1;
+        placeImage = placeImage1;
+        mainMenu = false;
+        menu = false;
+      } 
+
+      //credits
+      if ((mouseX > 315 && mouseX < 525) && (mouseY > 250 && mouseY < 315)) {
+        mainMenu = false;
+        credits = true;
+      }
+
+      //level select
+      if ((mouseX > 315 && mouseX < 525) && (mouseY > 350 && mouseY < 415)) {
+        mainMenu = false;
+        levelSelect = true;
+      }
+      return;
     }
-    return;
+
+    if (credits) {
+      if ((mouseX > 315 && mouseX < 525) && (mouseY > 350 && mouseY < 415)) {
+        credits = false;
+        mainMenu = true;
+      }
+      return;
+    }
+        
+    if (levelSelect) {
+      if ((mouseX > 315 && mouseX < 525) && (mouseY > 150 && mouseY < 215)) { //level 1
+        path = path1;
+        mapImage = mapImage1;
+        placeImage = placeImage1;
+        levelSelect = false;
+        menu = false;
+
+      } else if ((mouseX > 315 && mouseX < 525) && (mouseY > 250 && mouseY < 315)) { //level 2
+        path = path2;
+        mapImage = mapImage2;
+        placeImage = placeImage2;
+        levelSelect = false;
+        menu = false;
+
+      } else if ((mouseX > 315 && mouseX < 525) && (mouseY > 350 && mouseY < 415)) { //level 3
+        path = path3;
+        //mapImage = mapImage3;
+        //placeImage = placeImage3;
+        levelSelect = false;
+        menu = false;
+      }
+      return;
+    }
   }
+
+
   // If there is a tower being placed, then clicking the mouse should
   // place the tower
   if (towerBeingPlaced) {
