@@ -4,7 +4,7 @@
 export class Car {
   /**
    * Size of the collision circle of the car.
-   * 
+   *
    * @type {number}
    */
   colliderSize = 30;
@@ -23,7 +23,7 @@ export class Car {
     this.pos = path[0].copy();
     /**
      * Which entry in the path the car is moving towards.
-     * 
+     *
      * @property {number}
      * @see path
      */
@@ -52,6 +52,10 @@ export class Car {
     this.windowColor = color("grey");
     /** @property {p5.Color} */
     this.tireColor = color("black");
+  }
+
+  setSpeed(newSpeed) {
+    this.speed = newSpeed;
   }
 
   draw() {
