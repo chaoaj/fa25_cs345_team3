@@ -178,7 +178,7 @@ const towerMenu = [
 
 export function preload() {
   mapImage1 = loadImage("./assets/board_demo.png");
-  placeImage1 = loadImage("./assets/board_demo.png");
+  placeImage1 = loadImage("./assets/board1_placemap.png");
   mapImage2 = loadImage("./assets/board2.png");
   placeImage2 = loadImage("./assets/board2_placemap.png");
 }
