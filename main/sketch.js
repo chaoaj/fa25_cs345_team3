@@ -233,8 +233,6 @@ export function setup() {
     createVector(360, 175),
     createVector(360, -20),
   ];
-
-  setNextSpawnTimer();
 }
 
 export function draw() {
@@ -490,11 +488,6 @@ export function spawnCar() {
   //create new car with created path
   const newCar = new Car(path, random(1, 2.5), 100);
   cars.push(newCar);
-}
-
-export function setNextSpawnTimer() {
-  //picks between 1 second at 2.5 seconds
-  spawnTimer = random(60, 150); //at 60 fps
 }
 
 // yet to be implemented. takes a position, returns the nearest car
