@@ -490,7 +490,7 @@ export function gameDraw() {
     }
     for (let tower of towers) {
       stroke(0, 0, 0, 0);
-      fill(255, 255, 0, 100);
+      fill(0, 255, 0, 100);
       switch (tower.name) {
       case "Speed Camera":
         circle(tower.obj.position.x, tower.obj.position.y, SpeedCamera.firingRange * 2);
