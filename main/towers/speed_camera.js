@@ -9,7 +9,7 @@ export const bodyTurretSize = [-5, -5, 30, 10];
 export const cost = 250;
 
 // How many pixels away the tower can shoot
-const firingRange = 75;
+export const firingRange = 75;
 
 /**
  * Update function for the tower
@@ -20,14 +20,10 @@ const firingRange = 75;
 export function update() {
   this.obj.target = getNearestCar(this.obj.position.x, this.obj.position.y);
   for (const car of cars) {
-    const distanceToTarget = this.obj.target.dist(this.obj.position);
+    const distanceToTarget = car.pos.dist(this.obj.position);
 
     if (distanceToTarget <= firingRange) {
-      car.setSpeed(2); // Slow down the car to speed 1 when in range
-    }
-    if (distanceToTarget > firingRange) {
-      // TODO: remember to fix this before committing!
-      car.setSpeed(1); // Reset the car speed to normal when out of range
+      car.affectedBySpeedCamera = true;
     }
   }
 }

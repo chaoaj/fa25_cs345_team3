@@ -12,7 +12,7 @@ export const bodyTurretSize = [-5, -5, 30, 10];
 export const cost = 140;
 
 // How many pixels away the tower can shoot
-const firingRange = 200;
+export const firingRange = 200;
 
 /**
  * This method should fire a projectile at the nearest/first car

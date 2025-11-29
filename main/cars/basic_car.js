@@ -52,6 +52,7 @@ export class Car {
     this.windowColor = color("grey");
     /** @property {p5.Color} */
     this.tireColor = color("black");
+    this.affectedBySpeedCamera = false;
   }
 
   setSpeed(newSpeed) {
@@ -133,7 +134,11 @@ export class Car {
       }
     } else {
       direction.normalize();
-      direction.mult(this.speed);
+      if (this.affectedBySpeedCamera) {
+        direction.mult(this.speed * 0.5);
+      } else {
+        direction.mult(this.speed);
+      }
       this.velocity = direction;
       this.pos.add(this.velocity);
     }

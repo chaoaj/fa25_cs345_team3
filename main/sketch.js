@@ -317,6 +317,11 @@ export function gameDraw() {
     paused = true;
   }
 
+  // At the beginning of the frame, reset car.affectedBySpeedCamera.
+  for (const car of cars) {
+    car.affectedBySpeedCamera = false;
+  }
+
   for (const tower of towers) {
     if (!paused && !tower.obj.isGhost) {
       tower.update();
@@ -481,7 +486,19 @@ export function gameDraw() {
       stroke(0, 0, 0, 0);
       fill(255, 255, 0, 100);
       // Draw car colliders
-      circle(car.pos.x, car.pos.y, car.colliderSize);
+      circle(car.pos.x, car.pos.y, car.colliderSize * 2);
+    }
+    for (let tower of towers) {
+      stroke(0, 0, 0, 0);
+      fill(255, 255, 0, 100);
+      switch (tower.name) {
+      case "Speed Camera":
+        circle(tower.obj.position.x, tower.obj.position.y, SpeedCamera.firingRange * 2);
+        break;
+      case "Basic Tower":
+        circle(tower.obj.position.x, tower.obj.position.y, BasicTower.firingRange * 2);
+        break;
+      }
     }
   }
   textAlign(RIGHT, TOP);
