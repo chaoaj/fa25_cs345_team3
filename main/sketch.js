@@ -1,5 +1,6 @@
 import * as BasicTower from "./towers/basic_tower.js";
-import { Tower } from "./towers/basic_tower.js";
+import * as SpeedCamera from "./towers/speed_camera.js";
+import { Tower } from "./towers/tower.js";
 import { Car } from "./cars/basic_car.js";
 import * as Constants from "./constants.js";
 import { basicTowerProjectile } from "./projectiles/basic_tower_proj.js";
@@ -155,6 +156,23 @@ const towerMenu = [
       pop();
     },
     // These will be populated by the draw() loop
+    menuSize: 40,
+    menuPos: null,
+  },
+  {
+    name: "Speed Camera",
+    cost: SpeedCamera.cost,
+    create: (name) => new Tower(SpeedCamera.draw, SpeedCamera.update, name),
+    drawIcon: (x, y) => {
+      push();
+      translate(x, y);
+      stroke(0);
+      // fill(...SpeedCamera.bodyColor);
+      // circle(0, 0, SpeedCamera.bodyCircleSize);
+      fill(...SpeedCamera.turretColor);
+      rect(...SpeedCamera.bodyTurretSize);
+      pop();
+    },
     menuSize: 40,
     menuPos: null,
   },

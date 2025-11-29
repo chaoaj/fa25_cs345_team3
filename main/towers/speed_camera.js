@@ -1,4 +1,5 @@
 import { cars, getNearestCar } from "../sketch.js";
+import { Tower} from "./tower.js";
 
 const allowTint = [100, 255, 100];
 const denyTint = [255, 100, 100];
@@ -11,50 +12,8 @@ export const cost = 250;
 const firingRange = 75;
 
 /**
- * @typedef {Object} TowerLocalData
- * @property {p5.Vector} position Where the tower is.
- * @property {boolean} isGhost True if the tower is being placed right now.
- * @property {boolean} canPlace True if the tower can be placed at the current position.
- * @property {p5.Vector} target Where the tower is aiming at.
- * @property {number} cost How much the tower costs.
- */
-
-/**
- * Tower constructor. could be called like new Tower(whatever).
- *
- * @param {() => void} draw The function to draw the tower.
- * @param {() => void} update The function to update the tower.
- * @param {string} name What the name of the tower type is.
- */
-export function Tower(draw, update, name) {
-  /**
-   * Called every frame to draw.
-   *
-   * @property {() => void}
-   */
-  this.draw = draw;
-  /** runs the actual game code, called every frame. @property {() => void} */
-  this.update = update;
-  /** The name of the tower type @type {() => void} */
-  this.name = name;
-  // local data for this tower; varies between towers; composition
-  // over inheritance!
-  /** Local data for the tower @type {TowerLocalData} */
-  this.obj = {};
-  // Other possible properties:
-  //  • position	- (x,y) coordinates
-  //  • cost		- how much it costs to place it
-  //  • upgrades	- some structure for the upgrades?
-  //  • name          - what type of tower it is. might be used somewhere
-  //  • isGhost       - while a tower is being placed, it is shown on the
-  //                    screen, but it shouldn't fire at anything. if this
-  //                    is true, then the tower doesn't actually exist,
-  //                    and shouldn't fire or anything.
-  // would have to have other code implemented to know what we need.
-}
-
-/**
  * Update function for the tower
+ 
  *
  * @this Tower
  */
@@ -67,6 +26,7 @@ export function update() {
       car.setSpeed(2); // Slow down the car to speed 1 when in range
     }
     if (distanceToTarget > firingRange) {
+      // TODO: remember to fix this before committing!
       car.setSpeed(1); // Reset the car speed to normal when out of range
     }
   }
@@ -109,7 +69,7 @@ export function draw() {
   /** @type {p5.Vector} */
   const target = this.obj.target ?? createVector(0, 0);
   stroke(0, 0, 0);
-  fill(...localBodyColor);
+  // fill(...localBodyColor);
   // Point the turret at the mouse
   translate(this.obj.position.x, this.obj.position.y);
   rotate(
