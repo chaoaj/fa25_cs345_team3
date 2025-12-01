@@ -616,7 +616,7 @@ export function mousePressed() {
       towerBeingPlaced.obj.isGhost = false;
       towerBeingPlaced.obj.position = mouseVector.copy();
       towers.push(towerBeingPlaced);
-      currency -= towerMenu[towerMenu.length - 1].cost;
+      currency -= towerMenu.filter(t => t.name === towerBeingPlaced.name)[0].cost;
       towerBeingPlaced = null;
     } else if (mouseVector.x >= Constants.mapWidth) {
       // Remove ghost tower if the tower is being placed back in the
