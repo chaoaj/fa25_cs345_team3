@@ -31,6 +31,7 @@ let path;
 let currency = 500;
 let health = 100;
 
+let gameWon = false;
 let lastSpawn = 0;
 let time = 0;
 let carSpawnI = 0;
@@ -47,6 +48,7 @@ function w(x) {
 let carSpawns = [
   w(7), s(1), s(1), s(1), s(1),
   w(0.5), s(0.5), s(0.5), s(0.5), s(0.5),
+  w(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5),
 ];
 
 /** @type {p5.Image} */
@@ -70,6 +72,26 @@ let menu = true; //runs menudraw until false
 let mainMenu = true; //runs menudraw on menu
 let credits = false; //says that credits was pressed
 let levelSelect = false; //says that levelSelect was pressed
+
+/**
+ * Reset the game
+ */
+function reset() {
+  paused = false;
+  towers = [];
+  cars = [];
+  projectiles = [];
+  currency = 500;
+  health = 100;
+  gameWon = false;
+  lastSpawn = 0;
+  time = 0;
+  carSpawnI = 0;
+  menu = true;
+  mainMenu = true;
+  credits = false;
+  levelSelect = false;
+}
 
 /**
  * Whether a coordinate is in bounds of the screen.
@@ -349,6 +371,10 @@ export function gameDraw() {
           spawnCar();
         }
       }
+    } else if (cars.length == 0) {
+      // The level is finished
+      paused = true;
+      gameWon = true;
     }
   }
 
@@ -508,13 +534,29 @@ export function gameDraw() {
   text(`Money: $${currency}`, Constants.mapWidth - 10, 10);
   text(`Health: ${health}`, Constants.mapWidth - 10, 30);
   if (health <= 0) {
-    //game over screen
+    // game over screen
     background(0, 0, 0, 200);
     fill(255);
     textSize(80);
     textAlign(CENTER, CENTER);
     text("Game Over", Constants.mapWidth / 2, Constants.mapHeight / 2);
     return;
+  }
+  if (gameWon) {
+    // game won screen
+    background(0, 0, 0, 200);
+    fill(255);
+    textSize(80);
+    textAlign(CENTER, CENTER);
+    text("Level Complete!", Constants.mapWidth / 2, Constants.mapHeight / 2);
+    stroke(51);
+    strokeWeight(2);
+    fill(255, 255, 255, 50);
+    rect(10, Constants.mapHeight -65 - 10, 390, 65);
+    fill(255);
+    textSize(40);
+    textAlign(LEFT, BOTTOM);
+    text("Back to main menu", 20, Constants.mapHeight - 20);
   }
   time += deltaTime;
 }
@@ -543,6 +585,13 @@ export function getNearestCar(x, y) {
 
 //Function to add mouse pressed functionality
 export function mousePressed() {
+
+  if (gameWon) {
+    if (mouseX > 10 && mouseX <= 10 + 390 && mouseY > Constants.mapHeight - 65 - 10 && mouseY <= Constants.mapHeight - 65 - 10 + 65) {
+      reset();
+    }
+    return;
+  }
   if (paused) {
     return;
   }
@@ -607,7 +656,6 @@ export function mousePressed() {
       return;
     }
   }
-
 
   // If there is a tower being placed, then clicking the mouse should
   // place the tower
