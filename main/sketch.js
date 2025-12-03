@@ -540,6 +540,14 @@ export function gameDraw() {
     textSize(80);
     textAlign(CENTER, CENTER);
     text("Game Over", Constants.mapWidth / 2, Constants.mapHeight / 2);
+    stroke(51);
+    strokeWeight(2);
+    fill(255, 255, 255, 50);
+    rect(10, Constants.mapHeight -65 - 10, 390, 65);
+    fill(255);
+    textSize(40);
+    textAlign(LEFT, BOTTOM);
+    text("Back to main menu", 20, Constants.mapHeight - 20);
     return;
   }
   if (gameWon) {
@@ -587,6 +595,12 @@ export function getNearestCar(x, y) {
 export function mousePressed() {
 
   if (gameWon) {
+    if (mouseX > 10 && mouseX <= 10 + 390 && mouseY > Constants.mapHeight - 65 - 10 && mouseY <= Constants.mapHeight - 65 - 10 + 65) {
+      reset();
+    }
+    return;
+  }
+  if (paused && health <= 0) {
     if (mouseX > 10 && mouseX <= 10 + 390 && mouseY > Constants.mapHeight - 65 - 10 && mouseY <= Constants.mapHeight - 65 - 10 + 65) {
       reset();
     }
