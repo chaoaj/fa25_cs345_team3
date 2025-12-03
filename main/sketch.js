@@ -1,5 +1,6 @@
 import * as BasicTower from "./towers/basic_tower.js";
 import * as SpeedCamera from "./towers/speed_camera.js";
+import * as CollapsedPowerLine from "./towers/collapsed_power_line.js";
 import { Tower } from "./towers/tower.js";
 import { Car } from "./cars/basic_car.js";
 import * as Constants from "./constants.js";
@@ -198,6 +199,22 @@ const towerMenu = [
     menuSize: 40,
     menuPos: null,
   },
+  {
+    name: "Collapsed Power Line",
+    cost: CollapsedPowerLine.cost,
+    create: (name) => new Tower(CollapsedPowerLine.draw, CollapsedPowerLine.update, name),
+    drawIcon: (x, y) => {
+      push();
+      translate(x, y);
+      stroke(0);
+      fill(...CollapsedPowerLine.poleColor);
+      rect(...CollapsedPowerLine.poleSize);
+      pop();
+    },
+    menuSize: 40,
+    menuPos: null,
+  },
+
   // --- EXAMPLE: Add a new tower here ---
   // {
   //   name: "Stop sign",
@@ -339,9 +356,10 @@ export function gameDraw() {
     paused = true;
   }
 
-  // At the beginning of the frame, reset car.affectedBySpeedCamera.
+  // At the beginning of the frame, reset car.affectedBySpeedCamera and car.affectedByPowerPole.
   for (const car of cars) {
     car.affectedBySpeedCamera = false;
+    car.affectedByPowerPole = false;
   }
 
   for (const tower of towers) {
@@ -524,6 +542,8 @@ export function gameDraw() {
       case "Basic Tower":
         circle(tower.obj.position.x, tower.obj.position.y, BasicTower.firingRange * 2);
         break;
+      case "Collapsed Power Line":
+        circle(tower.obj.position.x, tower.obj.position.y, CollapsedPowerLine.firingRange * 2);
       }
     }
   }
@@ -591,7 +611,7 @@ export function getNearestCar(x, y) {
   return nearestCar;
 }
 
-//Function to add mouse pressed functionality
+// Function to add mouse pressed functionality
 export function mousePressed() {
 
   if (gameWon) {
@@ -611,7 +631,7 @@ export function mousePressed() {
   }
 
   const mouseVector = createVector(mouseX, mouseY);
-  
+
   if (menu) {
     if (mainMenu) {
       //start
@@ -621,7 +641,7 @@ export function mousePressed() {
         placeImage = placeImage1;
         mainMenu = false;
         menu = false;
-      } 
+      }
 
       //credits
       if ((mouseX > 315 && mouseX < 525) && (mouseY > 250 && mouseY < 315)) {
@@ -644,7 +664,7 @@ export function mousePressed() {
       }
       return;
     }
-        
+
     if (levelSelect) {
       if ((mouseX > 315 && mouseX < 525) && (mouseY > 150 && mouseY < 215)) { //level 1
         path = path1;

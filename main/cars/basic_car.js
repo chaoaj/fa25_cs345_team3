@@ -53,6 +53,7 @@ export class Car {
     /** @property {p5.Color} */
     this.tireColor = color("black");
     this.affectedBySpeedCamera = false;
+    this.affectedByPowerPole = false;
   }
 
   setSpeed(newSpeed) {
@@ -136,6 +137,11 @@ export class Car {
       direction.normalize();
       if (this.affectedBySpeedCamera) {
         direction.mult(this.speed * 0.5);
+      } else {
+        direction.mult(this.speed);
+      }
+      if (this.affectedByPowerPole) {
+        direction.mult(this.speed * 0.9);
       } else {
         direction.mult(this.speed);
       }
