@@ -36,6 +36,19 @@ let lastSpawn = 0;
 let time = 0;
 let carSpawnI = 0;
 
+/**
+ * Checks for collision with a rectangle and the mouse
+ *
+ * @param {number} bx x position of the top left corner of the rectangle
+ * @param {number} by y position of the top left corner of the rectangle
+ * @param {number} ex x position of the bottom right corner of the rectangle
+ * @param {number} ey y position of the bottom right corner of the rectangle
+ */
+function mouseOnRect(bx, by, ex, ey) {
+  const x = mouseX;
+  const y = mouseY;
+  return x > bx && x <= ex && y > by && y <= ey;
+}
 
 function s(x) {
   return x * 1000;
@@ -593,15 +606,15 @@ export function getNearestCar(x, y) {
 
 //Function to add mouse pressed functionality
 export function mousePressed() {
-
+  const mouseVector = createVector(mouseX, mouseY);
   if (gameWon) {
-    if (mouseX > 10 && mouseX <= 10 + 390 && mouseY > Constants.mapHeight - 65 - 10 && mouseY <= Constants.mapHeight - 65 - 10 + 65) {
+    if (mouseOnRect(10, Constants.mapHeight - 65 - 10, 10 + 390, Constants.mapHeight - 10)) {
       reset();
     }
     return;
   }
   if (paused && health <= 0) {
-    if (mouseX > 10 && mouseX <= 10 + 390 && mouseY > Constants.mapHeight - 65 - 10 && mouseY <= Constants.mapHeight - 65 - 10 + 65) {
+    if (mouseOnRect(10, Constants.mapHeight - 65 -10, 10 + 390, Constants.mapHeight - 10)) {
       reset();
     }
     return;
@@ -609,13 +622,11 @@ export function mousePressed() {
   if (paused) {
     return;
   }
-
-  const mouseVector = createVector(mouseX, mouseY);
   
   if (menu) {
     if (mainMenu) {
       //start
-      if ((mouseX > 315 && mouseX < 525) && (mouseY > 150 && mouseY < 215)) {
+      if (mouseOnRect(315, 150, 525, 215)) {
         path = path1;
         mapImage = mapImage1;
         placeImage = placeImage1;
@@ -624,13 +635,13 @@ export function mousePressed() {
       } 
 
       //credits
-      if ((mouseX > 315 && mouseX < 525) && (mouseY > 250 && mouseY < 315)) {
+      if (mouseOnRect(315, 250, 525, 315)) {
         mainMenu = false;
         credits = true;
       }
 
       //level select
-      if ((mouseX > 315 && mouseX < 525) && (mouseY > 350 && mouseY < 415)) {
+      if (mouseOnRect(315, 350, 525, 415)) {
         mainMenu = false;
         levelSelect = true;
       }
@@ -638,7 +649,7 @@ export function mousePressed() {
     }
 
     if (credits) {
-      if ((mouseX > 315 && mouseX < 525) && (mouseY > 350 && mouseY < 415)) {
+      if (mouseOnRect(315, 350, 525, 415)) {
         credits = false;
         mainMenu = true;
       }
@@ -646,21 +657,20 @@ export function mousePressed() {
     }
         
     if (levelSelect) {
-      if ((mouseX > 315 && mouseX < 525) && (mouseY > 150 && mouseY < 215)) { //level 1
+      if (mouseOnRect(315, 150, 525, 215)) { //level 1
         path = path1;
         mapImage = mapImage1;
         placeImage = placeImage1;
         levelSelect = false;
         menu = false;
-
-      } else if ((mouseX > 315 && mouseX < 525) && (mouseY > 250 && mouseY < 315)) { //level 2
+      } else if (mouseOnRect(315, 250, 525, 315)) { //level 2
         path = path2;
         mapImage = mapImage2;
         placeImage = placeImage2;
         levelSelect = false;
         menu = false;
 
-      } else if ((mouseX > 315 && mouseX < 525) && (mouseY > 350 && mouseY < 415)) { //level 3
+      } else if (mouseOnRect(315, 350, 525, 415)) { //level 3
         path = path3;
         //mapImage = mapImage3;
         //placeImage = placeImage3;
@@ -690,15 +700,11 @@ export function mousePressed() {
 
   let somethingClicked = false;
 
-  // Check for a click to the menu TODO: It'd be neat if checking if a
-  // vector collided with a rectangle (AABB) was its own function,
-  // because i just wrote it twice.
-  if (
-    mouseX >= tmenuX &&
-    mouseX < tmenuX + Constants.towerMenuWidth &&
-    mouseY >= tmenuY &&
-    mouseY < tmenuY + Constants.towerMenuHeight
-  ) {
+  // Check for a click to the menu 
+  if (mouseOnRect(temuX,
+                  tmenuY,
+                  tmenuX + Constants.towerMenuWidth,
+                  tmenuY + Constants.towerMenuHeight)) {
     somethingClicked = true;
     // Check if the close button was clicked
 
@@ -712,12 +718,7 @@ export function mousePressed() {
       Constants.towerMenuCloseButtonSize -
       10;
     const endY = beginY + Constants.towerMenuCloseButtonSize;
-    if (
-      mouseX >= beginX &&
-      mouseX < endX &&
-      mouseY >= beginY &&
-      mouseY < endY
-    ) {
+    if (mouseOnRect(beginX, beginY, endX, endY)) {
       // Jankily remove the tower
       towers = towers.filter(function (t) {
         return t != towerBeingMenued;
