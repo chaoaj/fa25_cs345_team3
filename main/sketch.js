@@ -721,7 +721,7 @@ export function mousePressed() {
   let somethingClicked = false;
 
   // Check for a click to the menu 
-  if (mouseOnRect(temuX,
+  if (mouseOnRect(tmenuX,
                   tmenuY,
                   tmenuX + Constants.towerMenuWidth,
                   tmenuY + Constants.towerMenuHeight)) {
