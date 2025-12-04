@@ -341,10 +341,26 @@ export function menuDraw() {
   }
 
   if (credits) {
-    rect(315, 350, 210, 65); //return to menu button
-
-    //text
+    rect(315, 350, 210, 65); 
+    //return to menu button
+    rect(80, 140, 280, 50);//Joseph
+    rect(80, 240, 280, 50);//Ephram
+    rect(480, 140, 280, 50);//Ivan
+    rect(480, 240, 280, 50);//Ryan
+    //outlines of names for better looks
+    
     fill(255);
+    text("Roadrage was created by", 420, 100)
+    line(180, 112, 650, 112);
+    
+    textSize(30);
+    text("Joseph Tessitore", 220, 175)
+    text("Ivan Galdamez", 620, 175)
+    text("Ephram Thompson", 220, 275)
+    text("Ryan Glasgow", 620, 275)
+    //actual text names
+
+    textSize(40);
     text("Return", 420, 398);
   }
 
