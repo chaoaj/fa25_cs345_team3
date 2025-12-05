@@ -476,7 +476,11 @@ export function gameDraw() {
     if (!paused) {
       towerBeingPlaced.obj.position.x = mouseX;
       towerBeingPlaced.obj.position.y = mouseY;
-      towerBeingPlaced.obj.canPlace = canPlaceAt(mouseX, mouseY);
+      if (towerBeingPlaced.name === "Collapsed Power Line") {
+        towerBeingPlaced.obj.canPlace = !canPlaceAt(mouseX, mouseY);
+      } else {
+        towerBeingPlaced.obj.canPlace = canPlaceAt(mouseX, mouseY);
+      }
     }
     towerBeingPlaced.draw();
   }
@@ -720,7 +724,8 @@ export function mousePressed() {
   // If there is a tower being placed, then clicking the mouse should
   // place the tower
   if (towerBeingPlaced) {
-    if (canPlaceAt(mouseVector.x, mouseVector.y)) {
+    if ((towerBeingPlaced.name === "Collapsed Power Line" && !canPlaceAt(mouseVector.x, mouseVector.y))
+        || canPlaceAt(mouseVector.x, mouseVector.y)) {
       towerBeingPlaced.obj.isGhost = false;
       towerBeingPlaced.obj.position = mouseVector.copy();
       towers.push(towerBeingPlaced);
@@ -749,10 +754,10 @@ export function mousePressed() {
     const beginX = tmenuX + 10;
     const endX = beginX + Constants.towerMenuCloseButtonSize;
     const beginY =
-      tmenuY +
-      Constants.towerMenuHeight -
-      Constants.towerMenuCloseButtonSize -
-      10;
+          tmenuY +
+          Constants.towerMenuHeight -
+          Constants.towerMenuCloseButtonSize -
+          10;
     const endY = beginY + Constants.towerMenuCloseButtonSize;
     if (mouseOnRect(beginX, beginY, endX, endY)) {
       // Jankily remove the tower
@@ -767,7 +772,7 @@ export function mousePressed() {
   for (const towerType of towerMenu) {
     if (
       dist(mouseX, mouseY, towerType.menuPos.x, towerType.menuPos.y) <
-      towerType.menuSize / 2 && currency >= towerType.cost
+        towerType.menuSize / 2 && currency >= towerType.cost
     ) {
       towerBeingPlaced = towerType.create(towerType.name);
       towerBeingPlaced.obj = {
