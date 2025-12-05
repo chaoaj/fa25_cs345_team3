@@ -135,7 +135,6 @@ export class Car {
     let target = this.path[this.targetWaypointIndex];
 
     let direction = p5.Vector.sub(target, this.pos);
-
     if (direction.mag() < this.speed) {
       this.pos = target.copy();
 
@@ -146,18 +145,14 @@ export class Car {
       }
     } else {
       direction.normalize();
+      let speed = this.speed;
       if (this.affectedBySpeedCamera) {
-        direction.mult(this.speed * 0.5);
-      } else {
-        this.setSpeed(this.speed);
-        direction.mult(this.speed);
+        speed *= 0.5;
       }
       if (this.affectedByPowerPole) {
-        direction.mult(this.speed * 0.9);
-      } else {
-        this.setSpeed(this.speed);
-        direction.mult(this.speed);
+        speed *= 0.9;
       }
+      direction.mult(speed);
       this.velocity = direction;
       this.pos.add(this.velocity);
     }
