@@ -51,20 +51,20 @@ function tintColor(base, tint, n) {
  */
 export function draw() {
   /** @type {number[]} */
-  let localTurretColor;
+  let localPoleColor;
   // Tint the colors
   if (this.obj.isGhost) {
     if (this.obj.canPlace) {
-      localTurretColor = tintColor(poleColor, allowTint, 0.7);
+      localPoleColor = tintColor(poleColor, allowTint, 0.7);
     } else {
-      localTurretColor = tintColor(poleColor, denyTint, 0.7);
+      localPoleColor = tintColor(poleColor, denyTint, 0.7);
     }
   } else {
-    localTurretColor = poleColor;
+    localPoleColor = poleColor;
   }
   stroke(0, 0, 0);
-  fill(...poleColor);
-  rectMode(CENTER);
+  translate(this.obj.position.x, this.obj.position.y);
+  fill(...localPoleColor);
   rect(...poleSize);
   resetMatrix();
 }
