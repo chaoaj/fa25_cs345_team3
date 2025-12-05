@@ -55,12 +55,12 @@ export function draw() {
   // Tint the colors
   if (this.obj.isGhost) {
     if (this.obj.canPlace) {
-      localTurretColor = tintColor(turretColor, allowTint, 0.7);
+      localTurretColor = tintColor(poleColor, allowTint, 0.7);
     } else {
-      localTurretColor = tintColor(turretColor, denyTint, 0.7);
+      localTurretColor = tintColor(poleColor, denyTint, 0.7);
     }
   } else {
-    localTurretColor = turretColor;
+    localTurretColor = poleColor;
   }
   stroke(0, 0, 0);
   fill(...poleColor);

@@ -1,5 +1,5 @@
 import { cars, getNearestCar } from "../sketch.js";
-import { Tower} from "./tower.js";
+import { Tower } from "./tower.js";
 
 const allowTint = [100, 255, 100];
 const denyTint = [255, 100, 100];
@@ -13,7 +13,7 @@ export const firingRange = 75;
 
 /**
  * Update function for the tower
- 
+
  *
  * @this Tower
  */

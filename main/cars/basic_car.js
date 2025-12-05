@@ -68,18 +68,29 @@ export class Car {
     //Added health bar drawing for testing purposes
     const healthBarWidth = this.bodyWidth;
     const healthBarHeight = 5;
-    const healthBarOffset = (-this.bodyHeight / 2) - healthBarHeight - 2;
+    const healthBarOffset = -this.bodyHeight / 2 - healthBarHeight - 2;
 
     noStroke();
     fill(255, 0, 0);
-    rect(-healthBarWidth / 2, healthBarOffset, healthBarWidth, healthBarHeight, 2);
+    rect(
+      -healthBarWidth / 2,
+      healthBarOffset,
+      healthBarWidth,
+      healthBarHeight,
+      2
+    );
 
-    const greenWidth = map(this.currentHealth, 0, this.maxHealth, 0, healthBarWidth);
+    const greenWidth = map(
+      this.currentHealth,
+      0,
+      this.maxHealth,
+      0,
+      healthBarWidth
+    );
 
     //draw green part
     fill(0, 255, 0);
     rect(-healthBarWidth / 2, healthBarOffset, greenWidth, healthBarHeight, 2);
-
 
     rectMode(CENTER);
     noStroke();
@@ -138,11 +149,13 @@ export class Car {
       if (this.affectedBySpeedCamera) {
         direction.mult(this.speed * 0.5);
       } else {
+        this.setSpeed(this.speed);
         direction.mult(this.speed);
       }
       if (this.affectedByPowerPole) {
         direction.mult(this.speed * 0.9);
       } else {
+        this.setSpeed(this.speed);
         direction.mult(this.speed);
       }
       this.velocity = direction;
