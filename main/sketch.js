@@ -721,7 +721,7 @@ export function mousePressed() {
   let somethingClicked = false;
 
   // Check for a click to the menu 
-  if (mouseOnRect(temuX,
+  if (mouseOnRect(tmenuX,
                   tmenuY,
                   tmenuX + Constants.towerMenuWidth,
                   tmenuY + Constants.towerMenuHeight)) {
@@ -753,16 +753,13 @@ export function mousePressed() {
       dist(mouseX, mouseY, towerType.menuPos.x, towerType.menuPos.y) <
       towerType.menuSize / 2 && currency >= towerType.cost
     ) {
-      towerBeingPlaced = towerType.create();
-      if (mouseVector.dist(towerType.menuPos) < towerType.menuSize / 2) {
-        towerBeingPlaced = towerType.create(towerType.name);
-        towerBeingPlaced.obj = {
-          position: createVector(mouseX, mouseY),
-          isGhost: true,
-        };
-        somethingClicked = true;
-        break;
-      }
+      towerBeingPlaced = towerType.create(towerType.name);
+      towerBeingPlaced.obj = {
+        position: createVector(mouseX, mouseY),
+        isGhost: true,
+      };
+      somethingClicked = true;
+      break;
     }
 
     // If nothing was clicked so far, check if any tower was clicked
