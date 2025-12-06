@@ -51,18 +51,34 @@ function mouseOnRect(bx, by, ex, ey) {
   return x > bx && x <= ex && y > by && y <= ey;
 }
 
-function s(x) {
-  return x * 1000;
+/**
+ * Spawn a car after some time.
+ *
+ * @param {number} seconds the number of seconds
+ * @param {number} health how much health the car should have
+ */
+function s(seconds, health = 100) {
+  return [seconds * 1000, health];
 }
 
-function w(x) {
-  return -s(x);
+
+/**
+ * Spawn a car after some time, but wait until all current cars are destroyed.
+ *
+ * @param {number} seconds the number of seconds
+ * @param {number} health how much health the car should have
+ */
+function w(seconds, health = 100) {
+  return s(-seconds, health);
 }
 
 let carSpawns = [
   w(7), s(1), s(1), s(1), s(1),
-  w(0.5), s(0.5), s(0.5), s(0.5), s(0.5),
-  w(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5),
+  w(0.5, 200), s(0.5), s(0.5), s(0.5), s(0.5),
+  w(0.5, 200), s(0.5), s(0.5, 200), s(0.5), s(0.5, 200), s(0.5), s(0.5), s(0.5, 200), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5, 300), s(0.5), s(0.5), s(0.5),
+  w(3, 400), s(0.1), s(0, 200), s(0.1), s(0, 200),
+  w(5), s(0), s(0), s(0), s(0), s(0), s(1), s(0), s(0), s(0), s(0), s(0), s(1), s(0), s(0), s(0), s(0), s(0),
+  w(0, 400), s(3, 400),
 ];
 
 /** @type {p5.Image} */
@@ -402,7 +418,7 @@ export function gameDraw() {
 
   if (!paused) {
     if (carSpawnI < carSpawns.length) {
-      let waitSpawnTimerFoo = carSpawns[carSpawnI];
+      let waitSpawnTimerFoo = carSpawns[carSpawnI][0];
       let skip = false;
       if (waitSpawnTimerFoo < 0) {
         if (cars.length > 0) {
@@ -414,8 +430,9 @@ export function gameDraw() {
       if (!skip) {
         if (time - lastSpawn > waitSpawnTimerFoo) {
           lastSpawn = time;
+          // Spawn a car with that health
+          spawnCar(carSpawns[carSpawnI][1]);
           carSpawnI += 1;
-          spawnCar();
         }
       }
     } else if (cars.length == 0) {
@@ -622,9 +639,9 @@ export function gameDraw() {
   time += deltaTime;
 }
 
-export function spawnCar() {
+export function spawnCar(health = 100) {
   //create new car with created path
-  const newCar = new Car(path, random(1, 2.5), 100);
+  const newCar = new Car(path, random(1, 2.5), health);
   cars.push(newCar);
 }
 

@@ -47,7 +47,19 @@ export class Car {
     /** @property {number} */
     this.bodyHeight = 14;
     /** @property {p5.Color} */
-    this.bodyColor = color("red");
+    this.bodyColor = color("brown");
+
+    // Set the color based on the maximum health. Different cars have different colors
+    if (this.maxHealth < 100) {
+      this.bodyColor = color("brown");
+    } else if (this.maxHealth < 200) {
+      this.bodyColor = color("red");
+    } else if (this.maxHealth < 400) {
+      this.bodyColor = color("blue");
+    } else {
+      this.bodyColor = color("pink");
+    }
+
     /** @property {p5.Color} */
     this.windowColor = color("grey");
     /** @property {p5.Color} */
