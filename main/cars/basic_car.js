@@ -16,7 +16,7 @@ export class Car {
    * @param {number} speed How fast the car is
    * @param {number} health how much damage the car can take before it breaks
    */
-  constructor(path, speed = 2, health = 50) {
+  constructor(path, speed = 2, health = 100) {
     /** The path that the car follows @property {p5.Vector[]} */
     this.path = path;
     /** The current position of the car @property {Vector} */
