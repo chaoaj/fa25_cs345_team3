@@ -63,6 +63,6 @@ export function draw() {
   }
 }
 
-export function finish() {
+export function reset() {
   confettis = [];
 }
