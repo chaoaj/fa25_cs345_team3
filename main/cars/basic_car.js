@@ -162,7 +162,8 @@ export class Car {
         speed *= 0.5;
       }
       if (this.affectedByPowerPole) {
-        speed *= 0.9;
+        speed *= 0.8;
+        this.takeDamage(0.25);
       }
       direction.mult(speed);
       this.velocity = direction;
