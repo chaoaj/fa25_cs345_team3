@@ -1,4 +1,5 @@
 import * as BasicTower from "./towers/basic_tower.js";
+import * as SuperTower from "./towers/super_tower.js";
 import * as SpeedCamera from "./towers/speed_camera.js";
 import * as CollapsedPowerLine from "./towers/collapsed_power_line.js";
 import { Tower } from "./towers/tower.js";
@@ -255,6 +256,27 @@ const towerMenu = [
     menuSize: 40,
     menuPos: null,
   },
+  {
+    name: "Super Tower",
+    baseCost: SuperTower.cost,
+    cost: SuperTower.cost,
+    // This function creates the actual tower object
+    create: (name) => new Tower(SuperTower.draw, SuperTower.update, name),
+    // This function draws the icon in the menu
+    drawIcon: (x, y) => {
+      push();
+      translate(x, y); // Center the drawing
+      stroke(0);
+      fill(...SuperTower.bodyColor); // bodyColor
+      circle(0, 0, SuperTower.bodyCircleSize);
+      fill(...SuperTower.turretColor); // turretColor
+      rect(...SuperTower.bodyTurretSize);
+      pop();
+    },
+    // These will be populated by the draw() loop
+    menuSize: 40,
+    menuPos: null,
+  }
 
   // --- EXAMPLE: Add a new tower here ---
   // {
@@ -625,6 +647,9 @@ export function gameDraw() {
         break;
       case "Basic Tower":
         circle(tower.obj.position.x, tower.obj.position.y, BasicTower.firingRange * 2);
+        break;
+      case "Super Tower":
+        circle(tower.obj.position.x, tower.obj.position.y, SuperTower.firingRange * 2);
         break;
       case "Collapsed Power Line":
         circle(tower.obj.position.x, tower.obj.position.y, CollapsedPowerLine.firingRange * 2);
