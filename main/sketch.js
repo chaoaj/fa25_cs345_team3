@@ -678,8 +678,6 @@ export function spawnCar(health = 100) {
   cars.push(newCar);
 }
 
-// yet to be implemented. takes a position, returns the nearest car
-// object, whatever that looks like.
 export function getNearestCar(x, y) {
   const pos = createVector(x, y);
   let nearestCar = createVector(Infinity, Infinity);
@@ -692,6 +690,30 @@ export function getNearestCar(x, y) {
     }
   }
   return nearestCar;
+}
+
+// Get the best car to target within range
+export function getBestCar(pos, range) {
+  let selectedCar = null;
+  let furthestWaypointIndex = 0;
+  let furthestDistanceToNextWaypoint = 0;
+  for (let car of cars) {
+    const carDist = pos.dist(car.pos);
+    if (carDist > range) {
+      continue;
+    }
+    const distanceToNextWaypoint = p5.Vector.sub(car.path[car.targetWaypointIndex], car.pos).mag();
+    if ((selectedCar == null)
+        || car.targetWaypointIndex > furthestWaypointIndex
+        || (car.targetWaypointIndex == furthestWaypointIndex
+            && distanceToNextWaypoint
+            < furthestDistanceToNextWaypoint)) {
+      selectedCar = car;
+      furthestWaypointIndex = car.targetWaypointIndex;
+      furthestDistanceToNextWaypoint = distanceToNextWaypoint;
+    }
+  }
+  return selectedCar;
 }
 
 // Function to add mouse pressed functionality

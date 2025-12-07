@@ -1,5 +1,5 @@
 import { basicTowerProjectile } from "../projectiles/basic_tower_proj.js";
-import { cars, getNearestCar, projectiles } from "../sketch.js";
+import { cars, getBestCar, getNearestCar, projectiles } from "../sketch.js";
 import { Tower } from "./tower.js";
 
 const allowTint = [100, 255, 100];
@@ -31,14 +31,20 @@ export function fire(pos, target) {
  * @this Tower
  */
 export function update() {
-  this.obj.target = getNearestCar(this.obj.position.x, this.obj.position.y);
-  // TODO: Add some way of getting a timestamp so this can have a
-  // cooldown. As it is now, all towers will fire in sync which is
-  // lame. Also frameCount=bad
+  if (this.obj.target === undefined) {
+    this.obj.target = createVector(Infinity, Infinity);
+  }
+  let shouldFire = false;
+  const targetCar = getBestCar(this.obj.position, firingRange);
+  if (targetCar) {
+
+    this.obj.target = targetCar.pos;
+    shouldFire = true;
+  }
   const enoughTimeElapsed = frameCount % 45 === 0;
   // Check whether the nearest car is close enough.
   const distanceToTarget = this.obj.target.dist(this.obj.position);
-  if (enoughTimeElapsed && distanceToTarget < firingRange) {
+  if (enoughTimeElapsed && shouldFire) {
     fire(this.obj.position, this.obj.target);
   }
 }
