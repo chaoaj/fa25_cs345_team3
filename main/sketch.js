@@ -102,6 +102,7 @@ let menu = true; //runs menudraw until false
 let mainMenu = true; //runs menudraw on menu
 let credits = false; //says that credits was pressed
 let levelSelect = false; //says that levelSelect was pressed
+let help = false;        // says that the help button was pressed
 
 /**
  * Reset the game
@@ -262,11 +263,13 @@ const towerMenu = [
   // },
 ];
 
+let newJerseyImage;
 export function preload() {
   mapImage1 = loadImage("./assets/board_demo.png");
   placeImage1 = loadImage("./assets/board1_placemap.png");
   mapImage2 = loadImage("./assets/board2.png");
   placeImage2 = loadImage("./assets/board2_placemap.png");
+  newJerseyImage = loadImage("./assets/new_jersey.png");
 }
 
 export function setup() {
@@ -342,6 +345,10 @@ export function menuDraw() {
     rect(315, 150, 210, 65); //start
     rect(315, 250, 210, 65); //credits
     rect(315, 350, 210, 65); //quit
+    rect(Constants.mapWidth + Constants.menuWidth - 60 - 10,
+         Constants.mapHeight - 60 - 10,
+         60,
+         60); // help
 
     //title line
     line(210, 125, 630, 125);
@@ -354,6 +361,7 @@ export function menuDraw() {
     text("Levels", 420, 398);
     textSize(50);
     text("RoadRagerz", 420, 125);
+    text("?", 800, 460);
   }
 
   if (credits) {
@@ -390,6 +398,21 @@ export function menuDraw() {
     text("Level 1", 420, 198);
     text("Level 2", 420, 298);
     text("Level 3", 420, 398);
+  }
+
+  if (help) {
+    image(newJerseyImage, 620, 100, 581/2, 968/2)
+    rect(315, 350, 210, 65);
+    textSize(16);
+    textAlign(LEFT, TOP);
+    fill("black");
+    strokeWeight(0);
+    text("In a pre-apocalypse version of New Jersey, it is your responsibility to make sure that the citizens of New Jersey are unable to enter New York. Buy different towers by dragging them from the menu on the right onto the map. When cars make it to the end of the road unharmed, your health will go down. If it reaches zero, you will lose the game! Finish the level by destroying all of the cars. And most importantly, have fun! Or else…", 10, 10, 820);
+    textSize(40);
+    fill("white");
+    strokeWeight(2);
+    textAlign(CENTER, BASELINE);
+    text("Return", 420, 398);
   }
 }
 
@@ -702,6 +725,16 @@ export function mousePressed() {
         mainMenu = false;
         levelSelect = true;
       }
+
+      // help
+      if (mouseOnRect(Constants.mapWidth + Constants.menuWidth - 60 - 10,
+                      Constants.mapHeight - 60 - 10,
+                      Constants.mapWidth + Constants.menuWidth - 10,
+                      Constants.mapHeight - 10)) {
+        mainMenu = false;
+        help = true;
+      }
+      
       return;
     }
 
@@ -733,6 +766,13 @@ export function mousePressed() {
         //placeImage = placeImage3;
         levelSelect = false;
         menu = false;
+      }
+      return;
+    }
+    if (help) {
+      if (mouseOnRect(315, 350, 525, 415)) {
+        help = false;
+        mainMenu = true;
       }
       return;
     }
