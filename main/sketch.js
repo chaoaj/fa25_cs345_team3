@@ -5,6 +5,7 @@ import { Tower } from "./towers/tower.js";
 import { Car } from "./cars/basic_car.js";
 import * as Constants from "./constants.js";
 import { basicTowerProjectile } from "./projectiles/basic_tower_proj.js";
+import * as Confetti from "./confetti.js";
 
 // Check this variable for any debug displays or features that you want to add.
 /** @type {boolean} */
@@ -34,7 +35,7 @@ let health = 100;
 
 let gameWon = false;
 let lastSpawn = 0;
-let time = 0;
+export let time = 0;
 let carSpawnI = 0;
 
 /**
@@ -108,6 +109,7 @@ let help = false;        // says that the help button was pressed
  * Reset the game
  */
 function reset() {
+  Confetti.reset();
   paused = false;
   towers = [];
   cars = [];
@@ -646,6 +648,7 @@ export function gameDraw() {
   if (gameWon) {
     // game won screen
     background(0, 0, 0, 200);
+    Confetti.draw();
     fill(255);
     textSize(80);
     textAlign(CENTER, CENTER);
