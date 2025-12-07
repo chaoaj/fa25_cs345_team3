@@ -124,6 +124,9 @@ function reset() {
   mainMenu = true;
   credits = false;
   levelSelect = false;
+  for (let towerMenuEntry of towerMenu) {
+    towerMenuEntry.cost = towerMenuEntry.baseCost;
+  }
 }
 
 /**
@@ -184,6 +187,7 @@ let towerBeingMenued = null;
 /**
  * @typedef {Object} TowerMenuEntry
  * @property {string} name
+ * @property {number} baseCost
  * @property {number} cost
  * @property {(name: string) => Tower} create
  * @property {(x: number, y: number) => void} drawIcon
@@ -196,6 +200,7 @@ let towerBeingMenued = null;
 const towerMenu = [
   {
     name: "Basic Tower",
+    baseCost: BasicTower.cost,
     cost: BasicTower.cost,
     // This function creates the actual tower object
     create: (name) => new Tower(BasicTower.draw, BasicTower.update, name),
@@ -216,6 +221,7 @@ const towerMenu = [
   },
   {
     name: "Speed Camera",
+    baseCost: SpeedCamera.cost,
     cost: SpeedCamera.cost,
     create: (name) => new Tower(SpeedCamera.draw, SpeedCamera.update, name),
     drawIcon: (x, y) => {
@@ -233,6 +239,7 @@ const towerMenu = [
   },
   {
     name: "Collapsed Power Line",
+    baseCost: CollapsedPowerLine.cost,
     cost: CollapsedPowerLine.cost,
     create: (name) => new Tower(CollapsedPowerLine.draw, CollapsedPowerLine.update, name),
     drawIcon: (x, y) => {
@@ -789,7 +796,11 @@ export function mousePressed() {
       towerBeingPlaced.obj.isGhost = false;
       towerBeingPlaced.obj.position = mouseVector.copy();
       towers.push(towerBeingPlaced);
-      currency -= towerMenu.filter(t => t.name === towerBeingPlaced.name)[0].cost;
+      const towerBeingPlacedEntry = towerMenu
+            .filter(t => t.name === towerBeingPlaced.name)[0];
+      currency -= towerBeingPlacedEntry.cost;
+      // Make placing more of the same tower more expensive
+      towerBeingPlacedEntry.cost = Math.floor(towerBeingPlacedEntry.cost * 1.1);
       towerBeingPlaced = null;
     } else if (mouseVector.x >= Constants.mapWidth) {
       // Remove ghost tower if the tower is being placed back in the
