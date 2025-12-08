@@ -386,7 +386,7 @@ export function menuDraw() {
          60); // help
 
     //title line
-    line(210, 125, 630, 125);
+    line(260, 125, 580, 125);
 
     //text
     fill(255);
@@ -409,8 +409,8 @@ export function menuDraw() {
     //outlines of names for better looks
     
     fill(255);
-    text("Roadrage was created by", 420, 100)
-    line(180, 112, 650, 112);
+    text("Roadragerz was created by", 420, 100)
+    line(160, 112, 680, 112);
     
     textSize(30);
     text("Joseph Tessitore", 220, 175)
