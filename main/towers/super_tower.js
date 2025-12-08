@@ -5,11 +5,11 @@ import { Tower } from "./tower.js";
 const allowTint = [100, 255, 100];
 const denyTint = [255, 100, 100];
 
-export const bodyColor = [255, 0, 0];
+export const bodyColor = [0, 0, 255];
 export const turretColor = [200, 200, 200];
 export const bodyCircleSize = 25;
 export const bodyTurretSize = [-5, -5, 30, 10];
-export const cost = 140;
+export const cost = 550;
 
 // How many pixels away the tower can shoot
 export const firingRange = 200;
@@ -37,13 +37,12 @@ export function update() {
   let shouldFire = false;
   const targetCar = getBestCar(this.obj.position, firingRange);
   if (targetCar) {
-
+    console.log(targetCar);
     this.obj.target = targetCar.pos;
     shouldFire = true;
   }
-  const enoughTimeElapsed = frameCount % 45 === 0;
+  const enoughTimeElapsed = frameCount % 20 === 0;
   // Check whether the nearest car is close enough.
-  const distanceToTarget = this.obj.target.dist(this.obj.position);
   if (enoughTimeElapsed && shouldFire) {
     fire(this.obj.position, this.obj.target);
   }

@@ -1,4 +1,5 @@
 import * as BasicTower from "./towers/basic_tower.js";
+import * as SuperTower from "./towers/super_tower.js";
 import * as SpeedCamera from "./towers/speed_camera.js";
 import * as CollapsedPowerLine from "./towers/collapsed_power_line.js";
 import { Tower } from "./towers/tower.js";
@@ -74,12 +75,14 @@ function w(seconds, health = 100) {
 }
 
 let carSpawns = [
-  w(7), s(1), s(1), s(1), s(1),
+  w(7, 50), s(2, 50), s(2, 50), s(2, 50),
+  w(0.5), s(1), s(1), s(1), s(1),
   w(0.5, 200), s(0.5), s(0.5), s(0.5), s(0.5),
   w(0.5, 200), s(0.5), s(0.5, 200), s(0.5), s(0.5, 200), s(0.5), s(0.5), s(0.5, 200), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5, 300), s(0.5), s(0.5), s(0.5),
   w(3, 400), s(0.1), s(0, 200), s(0.1), s(0, 200),
   w(5), s(0), s(0), s(0), s(0), s(0), s(1), s(0), s(0), s(0), s(0), s(0), s(1), s(0), s(0), s(0), s(0), s(0),
-  w(0, 400), s(3, 400),
+  w(1, 400), s(3, 400),
+  w(1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200),
 ];
 
 /** @type {p5.Image} */
@@ -124,6 +127,9 @@ function reset() {
   mainMenu = true;
   credits = false;
   levelSelect = false;
+  for (let towerMenuEntry of towerMenu) {
+    towerMenuEntry.cost = towerMenuEntry.baseCost;
+  }
 }
 
 /**
@@ -184,6 +190,7 @@ let towerBeingMenued = null;
 /**
  * @typedef {Object} TowerMenuEntry
  * @property {string} name
+ * @property {number} baseCost
  * @property {number} cost
  * @property {(name: string) => Tower} create
  * @property {(x: number, y: number) => void} drawIcon
@@ -196,6 +203,7 @@ let towerBeingMenued = null;
 const towerMenu = [
   {
     name: "Basic Tower",
+    baseCost: BasicTower.cost,
     cost: BasicTower.cost,
     // This function creates the actual tower object
     create: (name) => new Tower(BasicTower.draw, BasicTower.update, name),
@@ -216,6 +224,7 @@ const towerMenu = [
   },
   {
     name: "Speed Camera",
+    baseCost: SpeedCamera.cost,
     cost: SpeedCamera.cost,
     create: (name) => new Tower(SpeedCamera.draw, SpeedCamera.update, name),
     drawIcon: (x, y) => {
@@ -233,6 +242,7 @@ const towerMenu = [
   },
   {
     name: "Collapsed Power Line",
+    baseCost: CollapsedPowerLine.cost,
     cost: CollapsedPowerLine.cost,
     create: (name) => new Tower(CollapsedPowerLine.draw, CollapsedPowerLine.update, name),
     drawIcon: (x, y) => {
@@ -246,6 +256,27 @@ const towerMenu = [
     menuSize: 40,
     menuPos: null,
   },
+  {
+    name: "Super Tower",
+    baseCost: SuperTower.cost,
+    cost: SuperTower.cost,
+    // This function creates the actual tower object
+    create: (name) => new Tower(SuperTower.draw, SuperTower.update, name),
+    // This function draws the icon in the menu
+    drawIcon: (x, y) => {
+      push();
+      translate(x, y); // Center the drawing
+      stroke(0);
+      fill(...SuperTower.bodyColor); // bodyColor
+      circle(0, 0, SuperTower.bodyCircleSize);
+      fill(...SuperTower.turretColor); // turretColor
+      rect(...SuperTower.bodyTurretSize);
+      pop();
+    },
+    // These will be populated by the draw() loop
+    menuSize: 40,
+    menuPos: null,
+  }
 
   // --- EXAMPLE: Add a new tower here ---
   // {
@@ -617,6 +648,9 @@ export function gameDraw() {
       case "Basic Tower":
         circle(tower.obj.position.x, tower.obj.position.y, BasicTower.firingRange * 2);
         break;
+      case "Super Tower":
+        circle(tower.obj.position.x, tower.obj.position.y, SuperTower.firingRange * 2);
+        break;
       case "Collapsed Power Line":
         circle(tower.obj.position.x, tower.obj.position.y, CollapsedPowerLine.firingRange * 2);
       }
@@ -671,8 +705,6 @@ export function spawnCar(health = 100) {
   cars.push(newCar);
 }
 
-// yet to be implemented. takes a position, returns the nearest car
-// object, whatever that looks like.
 export function getNearestCar(x, y) {
   const pos = createVector(x, y);
   let nearestCar = createVector(Infinity, Infinity);
@@ -685,6 +717,30 @@ export function getNearestCar(x, y) {
     }
   }
   return nearestCar;
+}
+
+// Get the best car to target within range
+export function getBestCar(pos, range) {
+  let selectedCar = null;
+  let furthestWaypointIndex = 0;
+  let furthestDistanceToNextWaypoint = 0;
+  for (let car of cars) {
+    const carDist = pos.dist(car.pos);
+    if (carDist > range) {
+      continue;
+    }
+    const distanceToNextWaypoint = p5.Vector.sub(car.path[car.targetWaypointIndex], car.pos).mag();
+    if ((selectedCar == null)
+        || car.targetWaypointIndex > furthestWaypointIndex
+        || (car.targetWaypointIndex == furthestWaypointIndex
+            && distanceToNextWaypoint
+            < furthestDistanceToNextWaypoint)) {
+      selectedCar = car;
+      furthestWaypointIndex = car.targetWaypointIndex;
+      furthestDistanceToNextWaypoint = distanceToNextWaypoint;
+    }
+  }
+  return selectedCar;
 }
 
 // Function to add mouse pressed functionality
@@ -789,7 +845,11 @@ export function mousePressed() {
       towerBeingPlaced.obj.isGhost = false;
       towerBeingPlaced.obj.position = mouseVector.copy();
       towers.push(towerBeingPlaced);
-      currency -= towerMenu.filter(t => t.name === towerBeingPlaced.name)[0].cost;
+      const towerBeingPlacedEntry = towerMenu
+            .filter(t => t.name === towerBeingPlaced.name)[0];
+      currency -= towerBeingPlacedEntry.cost;
+      // Make placing more of the same tower more expensive
+      towerBeingPlacedEntry.cost = Math.floor(towerBeingPlacedEntry.cost * 1.1);
       towerBeingPlaced = null;
     } else if (mouseVector.x >= Constants.mapWidth) {
       // Remove ghost tower if the tower is being placed back in the
