@@ -89,7 +89,7 @@ let carSpawns = [
 let mapImage;
 let mapImage1;
 let mapImage2;
-let magImage3;
+let mapImage3;
 /** @type {p5.Image} */
 let placeImage;
 let placeImage1;
@@ -303,6 +303,8 @@ export function preload() {
   mapImage2 = loadImage("./assets/board2.png");
   placeImage2 = loadImage("./assets/board2_placemap.png");
   newJerseyImage = loadImage("./assets/new_jersey.png");
+  mapImage3 = loadImage("./assets/map3.png");
+  placeImage3 = loadImage("./assets/map3 redgreen.png");
 }
 
 export function setup() {
@@ -821,8 +823,8 @@ export function mousePressed() {
 
       } else if (mouseOnRect(315, 350, 525, 415)) { //level 3
         path = path3;
-        //mapImage = mapImage3;
-        //placeImage = placeImage3;
+        mapImage = mapImage3;
+        placeImage = placeImage3;
         levelSelect = false;
         menu = false;
       }
