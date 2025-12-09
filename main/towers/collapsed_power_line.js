@@ -1,5 +1,5 @@
 import { cars, getNearestCar } from "../sketch.js";
-import { Tower} from "./tower.js";
+import { Tower } from "./tower.js";
 
 const allowTint = [100, 255, 100];
 const denyTint = [255, 100, 100];
@@ -9,7 +9,7 @@ export const poleSize = [-5, -5, 75, 10];
 export const cost = 210;
 
 // How many pixels away the tower can shoot
-export const firingRange = 10;
+export const firingRange = 25;
 
 /**
  * Update function for the tower
@@ -64,7 +64,10 @@ export function draw() {
   }
   stroke(0, 0, 0);
   translate(this.obj.position.x, this.obj.position.y);
+  rectMode(CENTER);
   fill(...localPoleColor);
+  rotate(1);
   rect(...poleSize);
+  rectMode(CORNER);
   resetMatrix();
 }

@@ -6,7 +6,7 @@ const denyTint = [255, 100, 100];
 
 export const turretColor = [200, 200, 200];
 export const bodyTurretSize = [-5, -5, 30, 10];
-export const cost = 250;
+export const cost = 200;
 
 // How many pixels away the tower can shoot
 export const firingRange = 75;

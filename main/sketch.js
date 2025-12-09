@@ -1,10 +1,12 @@
 import * as BasicTower from "./towers/basic_tower.js";
+import * as SuperTower from "./towers/super_tower.js";
 import * as SpeedCamera from "./towers/speed_camera.js";
 import * as CollapsedPowerLine from "./towers/collapsed_power_line.js";
 import { Tower } from "./towers/tower.js";
 import { Car } from "./cars/basic_car.js";
 import * as Constants from "./constants.js";
 import { basicTowerProjectile } from "./projectiles/basic_tower_proj.js";
+import * as Confetti from "./confetti.js";
 
 // Check this variable for any debug displays or features that you want to add.
 /** @type {boolean} */
@@ -34,7 +36,7 @@ let health = 100;
 
 let gameWon = false;
 let lastSpawn = 0;
-let time = 0;
+export let time = 0;
 let carSpawnI = 0;
 
 /**
@@ -51,25 +53,43 @@ function mouseOnRect(bx, by, ex, ey) {
   return x > bx && x <= ex && y > by && y <= ey;
 }
 
-function s(x) {
-  return x * 1000;
+/**
+ * Spawn a car after some time.
+ *
+ * @param {number} seconds the number of seconds
+ * @param {number} health how much health the car should have
+ */
+function s(seconds, health = 100) {
+  return [seconds * 1000, health];
 }
 
-function w(x) {
-  return -s(x);
+
+/**
+ * Spawn a car after some time, but wait until all current cars are destroyed.
+ *
+ * @param {number} seconds the number of seconds
+ * @param {number} health how much health the car should have
+ */
+function w(seconds, health = 100) {
+  return s(-seconds, health);
 }
 
 let carSpawns = [
-  w(7), s(1), s(1), s(1), s(1),
-  w(0.5), s(0.5), s(0.5), s(0.5), s(0.5),
-  w(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5),
+  w(7, 50), s(2, 50), s(2, 50), s(2, 50),
+  w(0.5), s(1), s(1), s(1), s(1),
+  w(0.5, 200), s(0.5), s(0.5), s(0.5), s(0.5),
+  w(0.5, 200), s(0.5), s(0.5, 200), s(0.5), s(0.5, 200), s(0.5), s(0.5), s(0.5, 200), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5, 300), s(0.5), s(0.5), s(0.5),
+  w(3, 400), s(0.1), s(0, 200), s(0.1), s(0, 200),
+  w(5), s(0), s(0), s(0), s(0), s(0), s(1), s(0), s(0), s(0), s(0), s(0), s(1), s(0), s(0), s(0), s(0), s(0),
+  w(1, 400), s(3, 400),
+  w(1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200),
 ];
 
 /** @type {p5.Image} */
 let mapImage;
 let mapImage1;
 let mapImage2;
-let magImage3;
+let mapImage3;
 /** @type {p5.Image} */
 let placeImage;
 let placeImage1;
@@ -86,11 +106,13 @@ let menu = true; //runs menudraw until false
 let mainMenu = true; //runs menudraw on menu
 let credits = false; //says that credits was pressed
 let levelSelect = false; //says that levelSelect was pressed
+let help = false;        // says that the help button was pressed
 
 /**
  * Reset the game
  */
 function reset() {
+  Confetti.reset();
   paused = false;
   towers = [];
   cars = [];
@@ -105,6 +127,9 @@ function reset() {
   mainMenu = true;
   credits = false;
   levelSelect = false;
+  for (let towerMenuEntry of towerMenu) {
+    towerMenuEntry.cost = towerMenuEntry.baseCost;
+  }
 }
 
 /**
@@ -165,6 +190,7 @@ let towerBeingMenued = null;
 /**
  * @typedef {Object} TowerMenuEntry
  * @property {string} name
+ * @property {number} baseCost
  * @property {number} cost
  * @property {(name: string) => Tower} create
  * @property {(x: number, y: number) => void} drawIcon
@@ -177,6 +203,7 @@ let towerBeingMenued = null;
 const towerMenu = [
   {
     name: "Basic Tower",
+    baseCost: BasicTower.cost,
     cost: BasicTower.cost,
     // This function creates the actual tower object
     create: (name) => new Tower(BasicTower.draw, BasicTower.update, name),
@@ -197,6 +224,7 @@ const towerMenu = [
   },
   {
     name: "Speed Camera",
+    baseCost: SpeedCamera.cost,
     cost: SpeedCamera.cost,
     create: (name) => new Tower(SpeedCamera.draw, SpeedCamera.update, name),
     drawIcon: (x, y) => {
@@ -214,6 +242,7 @@ const towerMenu = [
   },
   {
     name: "Collapsed Power Line",
+    baseCost: CollapsedPowerLine.cost,
     cost: CollapsedPowerLine.cost,
     create: (name) => new Tower(CollapsedPowerLine.draw, CollapsedPowerLine.update, name),
     drawIcon: (x, y) => {
@@ -227,6 +256,27 @@ const towerMenu = [
     menuSize: 40,
     menuPos: null,
   },
+  {
+    name: "Super Tower",
+    baseCost: SuperTower.cost,
+    cost: SuperTower.cost,
+    // This function creates the actual tower object
+    create: (name) => new Tower(SuperTower.draw, SuperTower.update, name),
+    // This function draws the icon in the menu
+    drawIcon: (x, y) => {
+      push();
+      translate(x, y); // Center the drawing
+      stroke(0);
+      fill(...SuperTower.bodyColor); // bodyColor
+      circle(0, 0, SuperTower.bodyCircleSize);
+      fill(...SuperTower.turretColor); // turretColor
+      rect(...SuperTower.bodyTurretSize);
+      pop();
+    },
+    // These will be populated by the draw() loop
+    menuSize: 40,
+    menuPos: null,
+  }
 
   // --- EXAMPLE: Add a new tower here ---
   // {
@@ -246,11 +296,15 @@ const towerMenu = [
   // },
 ];
 
+let newJerseyImage;
 export function preload() {
   mapImage1 = loadImage("./assets/board_demo.png");
   placeImage1 = loadImage("./assets/board1_placemap.png");
   mapImage2 = loadImage("./assets/board2.png");
   placeImage2 = loadImage("./assets/board2_placemap.png");
+  newJerseyImage = loadImage("./assets/new_jersey.png");
+  mapImage3 = loadImage("./assets/map3.png");
+  placeImage3 = loadImage("./assets/map3 redgreen.png");
 }
 
 export function setup() {
@@ -292,14 +346,14 @@ export function setup() {
   path3 = [
     // 4 corners
     createVector(-20, 305),
-    createVector(175, 305),
-    createVector(175, 405),
+    createVector(75, 305),
     createVector(75, 405),
-    createVector(75, 255),
-    createVector(465, 255),
-    createVector(465, 75),
+    createVector(175, 405),
+    createVector(175, 255),
+    createVector(565, 255),
     createVector(565, 75),
-    createVector(565, 175),
+    createVector(465, 75),
+    createVector(465, 175),
     createVector(360, 175),
     createVector(360, -20),
   ];
@@ -326,9 +380,13 @@ export function menuDraw() {
     rect(315, 150, 210, 65); //start
     rect(315, 250, 210, 65); //credits
     rect(315, 350, 210, 65); //quit
+    rect(Constants.mapWidth + Constants.menuWidth - 60 - 10,
+         Constants.mapHeight - 60 - 10,
+         60,
+         60); // help
 
     //title line
-    line(210, 125, 630, 125);
+    line(260, 125, 580, 125);
 
     //text
     fill(255);
@@ -338,6 +396,7 @@ export function menuDraw() {
     text("Levels", 420, 398);
     textSize(50);
     text("RoadRagerz", 420, 125);
+    text("?", 800, 460);
   }
 
   if (credits) {
@@ -350,8 +409,8 @@ export function menuDraw() {
     //outlines of names for better looks
     
     fill(255);
-    text("Roadrage was created by", 420, 100)
-    line(180, 112, 650, 112);
+    text("Roadragerz was created by", 420, 100)
+    line(160, 112, 680, 112);
     
     textSize(30);
     text("Joseph Tessitore", 220, 175)
@@ -374,6 +433,21 @@ export function menuDraw() {
     text("Level 1", 420, 198);
     text("Level 2", 420, 298);
     text("Level 3", 420, 398);
+  }
+
+  if (help) {
+    image(newJerseyImage, 620, 100, 581/2, 968/2)
+    rect(315, 350, 210, 65);
+    textSize(16);
+    textAlign(LEFT, TOP);
+    fill("black");
+    strokeWeight(0);
+    text("In a pre-apocalypse version of New Jersey, it is your responsibility to make sure that the citizens of New Jersey are unable to enter New York. Buy different towers by dragging them from the menu on the right onto the map. When cars make it to the end of the road unharmed, your health will go down. If it reaches zero, you will lose the game! Finish the level by destroying all of the cars. And most importantly, have fun! Or else…", 10, 10, 820);
+    textSize(40);
+    fill("white");
+    strokeWeight(2);
+    textAlign(CENTER, BASELINE);
+    text("Return", 420, 398);
   }
 }
 
@@ -402,7 +476,7 @@ export function gameDraw() {
 
   if (!paused) {
     if (carSpawnI < carSpawns.length) {
-      let waitSpawnTimerFoo = carSpawns[carSpawnI];
+      let waitSpawnTimerFoo = carSpawns[carSpawnI][0];
       let skip = false;
       if (waitSpawnTimerFoo < 0) {
         if (cars.length > 0) {
@@ -414,8 +488,9 @@ export function gameDraw() {
       if (!skip) {
         if (time - lastSpawn > waitSpawnTimerFoo) {
           lastSpawn = time;
+          // Spawn a car with that health
+          spawnCar(carSpawns[carSpawnI][1]);
           carSpawnI += 1;
-          spawnCar();
         }
       }
     } else if (cars.length == 0) {
@@ -476,7 +551,11 @@ export function gameDraw() {
     if (!paused) {
       towerBeingPlaced.obj.position.x = mouseX;
       towerBeingPlaced.obj.position.y = mouseY;
-      towerBeingPlaced.obj.canPlace = canPlaceAt(mouseX, mouseY);
+      if (towerBeingPlaced.name === "Collapsed Power Line") {
+        towerBeingPlaced.obj.canPlace = !canPlaceAt(mouseX, mouseY);
+      } else {
+        towerBeingPlaced.obj.canPlace = canPlaceAt(mouseX, mouseY);
+      }
     }
     towerBeingPlaced.draw();
   }
@@ -571,6 +650,9 @@ export function gameDraw() {
       case "Basic Tower":
         circle(tower.obj.position.x, tower.obj.position.y, BasicTower.firingRange * 2);
         break;
+      case "Super Tower":
+        circle(tower.obj.position.x, tower.obj.position.y, SuperTower.firingRange * 2);
+        break;
       case "Collapsed Power Line":
         circle(tower.obj.position.x, tower.obj.position.y, CollapsedPowerLine.firingRange * 2);
       }
@@ -602,6 +684,7 @@ export function gameDraw() {
   if (gameWon) {
     // game won screen
     background(0, 0, 0, 200);
+    Confetti.draw();
     fill(255);
     textSize(80);
     textAlign(CENTER, CENTER);
@@ -618,14 +701,12 @@ export function gameDraw() {
   time += deltaTime;
 }
 
-export function spawnCar() {
+export function spawnCar(health = 100) {
   //create new car with created path
-  const newCar = new Car(path, random(1, 2.5), 100);
+  const newCar = new Car(path, random(1, 2.5), health);
   cars.push(newCar);
 }
 
-// yet to be implemented. takes a position, returns the nearest car
-// object, whatever that looks like.
 export function getNearestCar(x, y) {
   const pos = createVector(x, y);
   let nearestCar = createVector(Infinity, Infinity);
@@ -638,6 +719,30 @@ export function getNearestCar(x, y) {
     }
   }
   return nearestCar;
+}
+
+// Get the best car to target within range
+export function getBestCar(pos, range) {
+  let selectedCar = null;
+  let furthestWaypointIndex = 0;
+  let furthestDistanceToNextWaypoint = 0;
+  for (let car of cars) {
+    const carDist = pos.dist(car.pos);
+    if (carDist > range) {
+      continue;
+    }
+    const distanceToNextWaypoint = p5.Vector.sub(car.path[car.targetWaypointIndex], car.pos).mag();
+    if ((selectedCar == null)
+        || car.targetWaypointIndex > furthestWaypointIndex
+        || (car.targetWaypointIndex == furthestWaypointIndex
+            && distanceToNextWaypoint
+            < furthestDistanceToNextWaypoint)) {
+      selectedCar = car;
+      furthestWaypointIndex = car.targetWaypointIndex;
+      furthestDistanceToNextWaypoint = distanceToNextWaypoint;
+    }
+  }
+  return selectedCar;
 }
 
 // Function to add mouse pressed functionality
@@ -681,6 +786,16 @@ export function mousePressed() {
         mainMenu = false;
         levelSelect = true;
       }
+
+      // help
+      if (mouseOnRect(Constants.mapWidth + Constants.menuWidth - 60 - 10,
+                      Constants.mapHeight - 60 - 10,
+                      Constants.mapWidth + Constants.menuWidth - 10,
+                      Constants.mapHeight - 10)) {
+        mainMenu = false;
+        help = true;
+      }
+      
       return;
     }
 
@@ -708,10 +823,17 @@ export function mousePressed() {
 
       } else if (mouseOnRect(315, 350, 525, 415)) { //level 3
         path = path3;
-        //mapImage = mapImage3;
-        //placeImage = placeImage3;
+        mapImage = mapImage3;
+        placeImage = placeImage3;
         levelSelect = false;
         menu = false;
+      }
+      return;
+    }
+    if (help) {
+      if (mouseOnRect(315, 350, 525, 415)) {
+        help = false;
+        mainMenu = true;
       }
       return;
     }
@@ -720,11 +842,16 @@ export function mousePressed() {
   // If there is a tower being placed, then clicking the mouse should
   // place the tower
   if (towerBeingPlaced) {
-    if (canPlaceAt(mouseVector.x, mouseVector.y)) {
+    if ((towerBeingPlaced.name === "Collapsed Power Line" && !canPlaceAt(mouseVector.x, mouseVector.y))
+        || canPlaceAt(mouseVector.x, mouseVector.y)) {
       towerBeingPlaced.obj.isGhost = false;
       towerBeingPlaced.obj.position = mouseVector.copy();
       towers.push(towerBeingPlaced);
-      currency -= towerMenu.filter(t => t.name === towerBeingPlaced.name)[0].cost;
+      const towerBeingPlacedEntry = towerMenu
+            .filter(t => t.name === towerBeingPlaced.name)[0];
+      currency -= towerBeingPlacedEntry.cost;
+      // Make placing more of the same tower more expensive
+      towerBeingPlacedEntry.cost = Math.floor(towerBeingPlacedEntry.cost * 1.1);
       towerBeingPlaced = null;
     } else if (mouseVector.x >= Constants.mapWidth) {
       // Remove ghost tower if the tower is being placed back in the
@@ -749,10 +876,10 @@ export function mousePressed() {
     const beginX = tmenuX + 10;
     const endX = beginX + Constants.towerMenuCloseButtonSize;
     const beginY =
-      tmenuY +
-      Constants.towerMenuHeight -
-      Constants.towerMenuCloseButtonSize -
-      10;
+          tmenuY +
+          Constants.towerMenuHeight -
+          Constants.towerMenuCloseButtonSize -
+          10;
     const endY = beginY + Constants.towerMenuCloseButtonSize;
     if (mouseOnRect(beginX, beginY, endX, endY)) {
       // Jankily remove the tower
@@ -767,7 +894,7 @@ export function mousePressed() {
   for (const towerType of towerMenu) {
     if (
       dist(mouseX, mouseY, towerType.menuPos.x, towerType.menuPos.y) <
-      towerType.menuSize / 2 && currency >= towerType.cost
+        towerType.menuSize / 2 && currency >= towerType.cost
     ) {
       towerBeingPlaced = towerType.create(towerType.name);
       towerBeingPlaced.obj = {

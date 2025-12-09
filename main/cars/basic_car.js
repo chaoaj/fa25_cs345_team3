@@ -16,7 +16,7 @@ export class Car {
    * @param {number} speed How fast the car is
    * @param {number} health how much damage the car can take before it breaks
    */
-  constructor(path, speed = 2, health = 50) {
+  constructor(path, speed = 2, health = 100) {
     /** The path that the car follows @property {p5.Vector[]} */
     this.path = path;
     /** The current position of the car @property {Vector} */
@@ -47,7 +47,19 @@ export class Car {
     /** @property {number} */
     this.bodyHeight = 14;
     /** @property {p5.Color} */
-    this.bodyColor = color("red");
+    this.bodyColor = color("brown");
+
+    // Set the color based on the maximum health. Different cars have different colors
+    if (this.maxHealth < 100) {
+      this.bodyColor = color("brown");
+    } else if (this.maxHealth < 200) {
+      this.bodyColor = color("red");
+    } else if (this.maxHealth < 400) {
+      this.bodyColor = color("blue");
+    } else {
+      this.bodyColor = color("pink");
+    }
+
     /** @property {p5.Color} */
     this.windowColor = color("grey");
     /** @property {p5.Color} */
@@ -150,7 +162,8 @@ export class Car {
         speed *= 0.5;
       }
       if (this.affectedByPowerPole) {
-        speed *= 0.9;
+        speed *= 0.8;
+        this.takeDamage(0.25);
       }
       direction.mult(speed);
       this.velocity = direction;
