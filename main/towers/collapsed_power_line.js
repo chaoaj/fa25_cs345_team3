@@ -1,4 +1,4 @@
-import { cars, getNearestCar } from "../sketch.js";
+import { cars, getNearestCar, collapsedPowerLineSprite } from "../sketch.js";
 import { Tower } from "./tower.js";
 
 const allowTint = [100, 255, 100];
@@ -52,6 +52,7 @@ function tintColor(base, tint, n) {
 export function draw() {
   /** @type {number[]} */
   let localPoleColor;
+
   // Tint the colors
   if (this.obj.isGhost) {
     if (this.obj.canPlace) {
@@ -62,12 +63,11 @@ export function draw() {
   } else {
     localPoleColor = poleColor;
   }
+  push();
   stroke(0, 0, 0);
   translate(this.obj.position.x, this.obj.position.y);
-  rectMode(CENTER);
-  fill(...localPoleColor);
-  rotate(1);
-  rect(...poleSize);
-  rectMode(CORNER);
-  resetMatrix();
+  rotate(-0.785);
+  imageMode(CENTER);
+  image(collapsedPowerLineSprite, 0, 0, 100, 100);
+  pop();
 }
