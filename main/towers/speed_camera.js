@@ -1,4 +1,4 @@
-import { cars, getNearestCar } from "../sketch.js";
+import { cars, getNearestCar, speedCameraSprite } from "../sketch.js";
 import { Tower } from "./tower.js";
 
 const allowTint = [100, 255, 100];
@@ -64,14 +64,16 @@ export function draw() {
   }
   /** @type {p5.Vector} */
   const target = this.obj.target ?? createVector(0, 0);
+  push();
   stroke(0, 0, 0);
-  // fill(...localBodyColor);
   // Point the turret at the mouse
   translate(this.obj.position.x, this.obj.position.y);
   rotate(
     Math.atan2(target.y - this.obj.position.y, target.x - this.obj.position.x)
   );
-  fill(...localTurretColor);
-  rect(...bodyTurretSize);
-  resetMatrix();
+  imageMode(CENTER);
+  image(speedCameraSprite, 0, 0, 100, 100);
+  // fill(...localTurretColor);
+  // rect(...bodyTurretSize);
+  pop();
 }
