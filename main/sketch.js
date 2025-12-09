@@ -95,6 +95,7 @@ let placeImage;
 let placeImage1;
 let placeImage2;
 let placeImage3;
+export let collapsedPowerLineSprite;
 
 // Tower menu coordinates
 /** @type {number} */
@@ -305,6 +306,7 @@ export function preload() {
   newJerseyImage = loadImage("./assets/new_jersey.png");
   mapImage3 = loadImage("./assets/map3.png");
   placeImage3 = loadImage("./assets/map3 redgreen.png");
+  collapsedPowerLineSprite = loadImage("./assets/collapsed_power_line.png");
 }
 
 export function setup() {
@@ -400,18 +402,18 @@ export function menuDraw() {
   }
 
   if (credits) {
-    rect(315, 350, 210, 65); 
+    rect(315, 350, 210, 65);
     //return to menu button
     rect(80, 140, 280, 50);//Joseph
     rect(80, 240, 280, 50);//Ephram
     rect(480, 140, 280, 50);//Ivan
     rect(480, 240, 280, 50);//Ryan
     //outlines of names for better looks
-    
+
     fill(255);
     text("Roadragerz was created by", 420, 100)
     line(160, 112, 680, 112);
-    
+
     textSize(30);
     text("Joseph Tessitore", 220, 175)
     text("Ivan Galdamez", 620, 175)
@@ -442,7 +444,7 @@ export function menuDraw() {
     textAlign(LEFT, TOP);
     fill("black");
     strokeWeight(0);
-    text("In a pre-apocalypse version of New Jersey, it is your responsibility to make sure that the citizens of New Jersey are unable to enter New York. Buy different towers by dragging them from the menu on the right onto the map. When cars make it to the end of the road unharmed, your health will go down. If it reaches zero, you will lose the game! Finish the level by destroying all of the cars. And most importantly, have fun! Or else…", 10, 10, 820);
+    text("In a pre-apocalypse version of New Jersey, it is your responsibility to make sure that the citizens of New Jersey are unable to enter New York. Buy different towers by dragging them from the menu on the right onto the map. When cars make it to the end of the road un-destroyed, your health will go down. If it reaches zero, you will lose the game! Finish the level by destroying all of the cars. And most importantly, have fun! Or else…", 10, 10, 820);
     textSize(40);
     fill("white");
     strokeWeight(2);
@@ -763,7 +765,7 @@ export function mousePressed() {
   if (paused) {
     return;
   }
-  
+
   if (menu) {
     if (mainMenu) {
       //start
@@ -795,7 +797,7 @@ export function mousePressed() {
         mainMenu = false;
         help = true;
       }
-      
+
       return;
     }
 
@@ -863,7 +865,7 @@ export function mousePressed() {
 
   let somethingClicked = false;
 
-  // Check for a click to the menu 
+  // Check for a click to the menu
   if (mouseOnRect(tmenuX,
                   tmenuY,
                   tmenuX + Constants.towerMenuWidth,
