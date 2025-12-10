@@ -50,22 +50,23 @@ function tintColor(base, tint, n) {
  * @this Tower
  */
 export function draw() {
-  /** @type {number[]} */
-  let localTurretColor;
-  // Tint the colors
-  if (this.obj.isGhost) {
-    if (this.obj.canPlace) {
-      localTurretColor = tintColor(turretColor, allowTint, 0.7);
-    } else {
-      localTurretColor = tintColor(turretColor, denyTint, 0.7);
-    }
-  } else {
-    localTurretColor = turretColor;
-  }
   /** @type {p5.Vector} */
   const target = this.obj.target ?? createVector(0, 0);
   push();
+
+  // Tint the colors
+  if (this.obj.isGhost) {
+    if (this.obj.canPlace) {
+      tint("green");
+    } else {
+      tint("red");
+    }
+  } else {
+    noTint();
+  }
+  
   stroke(0, 0, 0);
+
   // Point the turret at the mouse
   translate(this.obj.position.x, this.obj.position.y);
   rotate(
@@ -73,7 +74,5 @@ export function draw() {
   );
   imageMode(CENTER);
   image(speedCameraSprite, 0, 0, 100, 100);
-  // fill(...localTurretColor);
-  // rect(...bodyTurretSize);
   pop();
 }

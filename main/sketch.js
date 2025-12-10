@@ -64,7 +64,6 @@ function s(seconds, health = 100) {
   return [seconds * 1000, health];
 }
 
-
 /**
  * Spawn a car after some time, but wait until all current cars are destroyed.
  *
@@ -76,14 +75,78 @@ function w(seconds, health = 100) {
 }
 
 let carSpawns = [
-  w(7, 50), s(2, 50), s(2, 50), s(2, 50),
-  w(0.5), s(1), s(1), s(1), s(1),
-  w(0.5, 200), s(0.5), s(0.5), s(0.5), s(0.5),
-  w(0.5, 200), s(0.5), s(0.5, 200), s(0.5), s(0.5, 200), s(0.5), s(0.5), s(0.5, 200), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5), s(0.5, 300), s(0.5), s(0.5), s(0.5),
-  w(3, 400), s(0.1), s(0, 200), s(0.1), s(0, 200),
-  w(5), s(0), s(0), s(0), s(0), s(0), s(1), s(0), s(0), s(0), s(0), s(0), s(1), s(0), s(0), s(0), s(0), s(0),
-  w(1, 400), s(3, 400),
-  w(1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200), s(0.1, 200),
+  w(7, 50),
+  s(2, 50),
+  s(2, 50),
+  s(2, 50),
+  w(0.5),
+  s(1),
+  s(1),
+  s(1),
+  s(1),
+  w(0.5, 200),
+  s(0.5),
+  s(0.5),
+  s(0.5),
+  s(0.5),
+  w(0.5, 200),
+  s(0.5),
+  s(0.5, 200),
+  s(0.5),
+  s(0.5, 200),
+  s(0.5),
+  s(0.5),
+  s(0.5, 200),
+  s(0.5),
+  s(0.5),
+  s(0.5),
+  s(0.5),
+  s(0.5),
+  s(0.5, 300),
+  s(0.5),
+  s(0.5),
+  s(0.5),
+  w(3, 400),
+  s(0.1),
+  s(0, 200),
+  s(0.1),
+  s(0, 200),
+  w(5),
+  s(0),
+  s(0),
+  s(0),
+  s(0),
+  s(0),
+  s(1),
+  s(0),
+  s(0),
+  s(0),
+  s(0),
+  s(0),
+  s(1),
+  s(0),
+  s(0),
+  s(0),
+  s(0),
+  s(0),
+  w(1, 400),
+  s(3, 400),
+  w(1, 200),
+  s(0.1, 200),
+  s(0.1, 200),
+  s(0.1, 200),
+  s(0.1, 200),
+  s(0.1, 200),
+  s(0.1, 200),
+  s(0.1, 200),
+  s(0.1, 200),
+  s(0.1, 200),
+  s(0.1, 200),
+  s(0.1, 200),
+  s(0.1, 200),
+  s(0.1, 200),
+  s(0.1, 200),
+  s(0.1, 200),
 ];
 
 /** @type {p5.Image} */
@@ -100,6 +163,8 @@ let placeImage3;
 export let aircraftImage;
 export let collapsedPowerLineSprite;
 export let speedCameraSprite;
+export let basicTowerSprite;
+export let superTowerSprite;
 
 // Tower menu coordinates
 /** @type {number} */
@@ -111,7 +176,7 @@ let menu = true; //runs menudraw until false
 let mainMenu = true; //runs menudraw on menu
 let credits = false; //says that credits was pressed
 let levelSelect = false; //says that levelSelect was pressed
-let help = false;        // says that the help button was pressed
+let help = false; // says that the help button was pressed
 
 /**
  * Reset the game
@@ -217,10 +282,8 @@ const towerMenu = [
       push();
       translate(x, y); // Center the drawing
       stroke(0);
-      fill(...BasicTower.bodyColor); // bodyColor
-      circle(0, 0, BasicTower.bodyCircleSize);
-      fill(...BasicTower.turretColor); // turretColor
-      rect(...BasicTower.bodyTurretSize);
+      imageMode(CENTER);
+      image(basicTowerSprite, 0, 0, 50, 50);
       pop();
     },
     // These will be populated by the draw() loop
@@ -236,10 +299,8 @@ const towerMenu = [
       push();
       translate(x, y);
       stroke(0);
-      // fill(...SpeedCamera.bodyColor);
-      // circle(0, 0, SpeedCamera.bodyCircleSize);
-      fill(...SpeedCamera.turretColor);
-      rect(...SpeedCamera.bodyTurretSize);
+      imageMode(CENTER);
+      image(speedCameraSprite, 0, 0, 100, 100);
       pop();
     },
     menuSize: 40,
@@ -249,13 +310,14 @@ const towerMenu = [
     name: "Collapsed Power Line",
     baseCost: CollapsedPowerLine.cost,
     cost: CollapsedPowerLine.cost,
-    create: (name) => new Tower(CollapsedPowerLine.draw, CollapsedPowerLine.update, name),
+    create: (name) =>
+      new Tower(CollapsedPowerLine.draw, CollapsedPowerLine.update, name),
     drawIcon: (x, y) => {
       push();
       translate(x, y);
       stroke(0);
-      fill(...CollapsedPowerLine.poleColor);
-      rect(...CollapsedPowerLine.poleSize);
+      imageMode(CENTER);
+      image(collapsedPowerLineSprite, 0, 0, 100, 100);
       pop();
     },
     menuSize: 40,
@@ -272,10 +334,8 @@ const towerMenu = [
       push();
       translate(x, y); // Center the drawing
       stroke(0);
-      fill(...SuperTower.bodyColor); // bodyColor
-      circle(0, 0, SuperTower.bodyCircleSize);
-      fill(...SuperTower.turretColor); // turretColor
-      rect(...SuperTower.bodyTurretSize);
+      imageMode(CENTER);
+      image(superTowerSprite, 0, 0, 50, 50);
       pop();
     },
     // These will be populated by the draw() loop
@@ -321,6 +381,8 @@ export function preload() {
   placeImage3 = loadImage("./assets/map3 redgreen.png");
   collapsedPowerLineSprite = loadImage("./assets/collapsed_power_line.png");
   speedCameraSprite = loadImage("./assets/speed_camera.png");
+  basicTowerSprite = loadImage("./assets/Cop_tower_basic.png");
+  superTowerSprite = loadImage("./assets/super_tower.png");
   aircraftImage = loadImage("./assets/Aircraft_tower.png");
 }
 
@@ -334,7 +396,7 @@ export function setup() {
   paused = pauseCheckbox.checked;
   pauseCheckbox.oninput = function () {
     paused = pauseCheckbox.checked;
-  }
+  };
   createCanvas(Constants.mapWidth + Constants.menuWidth, Constants.mapHeight);
 
   path1 = [
@@ -397,10 +459,12 @@ export function menuDraw() {
     rect(315, 150, 210, 65); //start
     rect(315, 250, 210, 65); //credits
     rect(315, 350, 210, 65); //quit
-    rect(Constants.mapWidth + Constants.menuWidth - 60 - 10,
+    rect(
+      Constants.mapWidth + Constants.menuWidth - 60 - 10,
       Constants.mapHeight - 60 - 10,
       60,
-      60); // help
+      60
+    ); // help
 
     //title line
     line(260, 125, 580, 125);
@@ -419,21 +483,21 @@ export function menuDraw() {
   if (credits) {
     rect(315, 350, 210, 65);
     //return to menu button
-    rect(80, 140, 280, 50);//Joseph
-    rect(80, 240, 280, 50);//Ephram
-    rect(480, 140, 280, 50);//Ivan
-    rect(480, 240, 280, 50);//Ryan
+    rect(80, 140, 280, 50); //Joseph
+    rect(80, 240, 280, 50); //Ephram
+    rect(480, 140, 280, 50); //Ivan
+    rect(480, 240, 280, 50); //Ryan
     //outlines of names for better looks
 
     fill(255);
-    text("Roadragerz was created by", 420, 100)
+    text("Roadragerz was created by", 420, 100);
     line(160, 112, 680, 112);
 
     textSize(30);
-    text("Joseph Tessitore", 220, 175)
-    text("Ivan Galdamez", 620, 175)
-    text("Ephram Thompson", 220, 275)
-    text("Ryan Glasgow", 620, 275)
+    text("Joseph Tessitore", 220, 175);
+    text("Ivan Galdamez", 620, 175);
+    text("Ephram Thompson", 220, 275);
+    text("Ryan Glasgow", 620, 275);
     //actual text names
 
     textSize(40);
@@ -453,13 +517,18 @@ export function menuDraw() {
   }
 
   if (help) {
-    image(newJerseyImage, 620, 100, 581 / 2, 968 / 2)
+    image(newJerseyImage, 620, 100, 581 / 2, 968 / 2);
     rect(315, 350, 210, 65);
     textSize(16);
     textAlign(LEFT, TOP);
     fill("black");
     strokeWeight(0);
-    text("In a pre-apocalypse version of New Jersey, it is your responsibility to make sure that the citizens of New Jersey are unable to enter New York. Buy different towers by dragging them from the menu on the right onto the map. When cars make it to the end of the road un-destroyed, your health will go down. If it reaches zero, you will lose the game! Finish the level by destroying all of the cars. And most importantly, have fun! Or else…", 10, 10, 820);
+    text(
+      "In a pre-apocalypse version of New Jersey, it is your responsibility to make sure that the citizens of New Jersey are unable to enter New York. Buy different towers by dragging them from the menu on the right onto the map. When cars make it to the end of the road un-destroyed, your health will go down. If it reaches zero, you will lose the game! Finish the level by destroying all of the cars. And most importantly, have fun! Or else…",
+      10,
+      10,
+      820
+    );
     textSize(40);
     fill("white");
     strokeWeight(2);
@@ -662,20 +731,32 @@ export function gameDraw() {
       fill(0, 255, 0, 100);
       switch (tower.name) {
         case "Speed Camera":
-          circle(tower.obj.position.x, tower.obj.position.y, SpeedCamera.firingRange * 2);
+          circle(
+            tower.obj.position.x,
+            tower.obj.position.y,
+            SpeedCamera.firingRange * 2
+          );
           break;
         case "Basic Tower":
-          circle(tower.obj.position.x, tower.obj.position.y, BasicTower.firingRange * 2);
+          circle(
+            tower.obj.position.x,
+            tower.obj.position.y,
+            BasicTower.firingRange * 2
+          );
           break;
         case "Super Tower":
-          circle(tower.obj.position.x, tower.obj.position.y, SuperTower.firingRange * 2);
+          circle(
+            tower.obj.position.x,
+            tower.obj.position.y,
+            SuperTower.firingRange * 2
+          );
           break;
         case "Collapsed Power Line":
-          circle(tower.obj.position.x, tower.obj.position.y, CollapsedPowerLine.firingRange * 2);
-          break;
-        case "Speed Enforcer":
-          circle(tower.obj.position.x, tower.obj.position.y, SpeedEnforcer.range * 2);
-          break;
+          circle(
+            tower.obj.position.x,
+            tower.obj.position.y,
+            CollapsedPowerLine.firingRange * 2
+          );
       }
     }
   }
@@ -752,12 +833,16 @@ export function getBestCar(pos, range) {
     if (carDist > range) {
       continue;
     }
-    const distanceToNextWaypoint = p5.Vector.sub(car.path[car.targetWaypointIndex], car.pos).mag();
-    if ((selectedCar == null)
-      || car.targetWaypointIndex > furthestWaypointIndex
-      || (car.targetWaypointIndex == furthestWaypointIndex
-        && distanceToNextWaypoint
-        < furthestDistanceToNextWaypoint)) {
+    const distanceToNextWaypoint = p5.Vector.sub(
+      car.path[car.targetWaypointIndex],
+      car.pos
+    ).mag();
+    if (
+      selectedCar == null ||
+      car.targetWaypointIndex > furthestWaypointIndex ||
+      (car.targetWaypointIndex == furthestWaypointIndex &&
+        distanceToNextWaypoint < furthestDistanceToNextWaypoint)
+    ) {
       selectedCar = car;
       furthestWaypointIndex = car.targetWaypointIndex;
       furthestDistanceToNextWaypoint = distanceToNextWaypoint;
@@ -770,13 +855,27 @@ export function getBestCar(pos, range) {
 export function mousePressed() {
   const mouseVector = createVector(mouseX, mouseY);
   if (gameWon) {
-    if (mouseOnRect(10, Constants.mapHeight - 65 - 10, 10 + 390, Constants.mapHeight - 10)) {
+    if (
+      mouseOnRect(
+        10,
+        Constants.mapHeight - 65 - 10,
+        10 + 390,
+        Constants.mapHeight - 10
+      )
+    ) {
       reset();
     }
     return;
   }
   if (paused && health <= 0) {
-    if (mouseOnRect(10, Constants.mapHeight - 65 - 10, 10 + 390, Constants.mapHeight - 10)) {
+    if (
+      mouseOnRect(
+        10,
+        Constants.mapHeight - 65 - 10,
+        10 + 390,
+        Constants.mapHeight - 10
+      )
+    ) {
       reset();
     }
     return;
@@ -809,10 +908,14 @@ export function mousePressed() {
       }
 
       // help
-      if (mouseOnRect(Constants.mapWidth + Constants.menuWidth - 60 - 10,
-        Constants.mapHeight - 60 - 10,
-        Constants.mapWidth + Constants.menuWidth - 10,
-        Constants.mapHeight - 10)) {
+      if (
+        mouseOnRect(
+          Constants.mapWidth + Constants.menuWidth - 60 - 10,
+          Constants.mapHeight - 60 - 10,
+          Constants.mapWidth + Constants.menuWidth - 10,
+          Constants.mapHeight - 10
+        )
+      ) {
         mainMenu = false;
         help = true;
       }
@@ -829,20 +932,22 @@ export function mousePressed() {
     }
 
     if (levelSelect) {
-      if (mouseOnRect(315, 150, 525, 215)) { //level 1
+      if (mouseOnRect(315, 150, 525, 215)) {
+        //level 1
         path = path1;
         mapImage = mapImage1;
         placeImage = placeImage1;
         levelSelect = false;
         menu = false;
-      } else if (mouseOnRect(315, 250, 525, 315)) { //level 2
+      } else if (mouseOnRect(315, 250, 525, 315)) {
+        //level 2
         path = path2;
         mapImage = mapImage2;
         placeImage = placeImage2;
         levelSelect = false;
         menu = false;
-
-      } else if (mouseOnRect(315, 350, 525, 415)) { //level 3
+      } else if (mouseOnRect(315, 350, 525, 415)) {
+        //level 3
         path = path3;
         mapImage = mapImage3;
         placeImage = placeImage3;
@@ -863,13 +968,17 @@ export function mousePressed() {
   // If there is a tower being placed, then clicking the mouse should
   // place the tower
   if (towerBeingPlaced) {
-    if ((towerBeingPlaced.name === "Collapsed Power Line" && !canPlaceAt(mouseVector.x, mouseVector.y))
-      || canPlaceAt(mouseVector.x, mouseVector.y)) {
+    if (
+      (towerBeingPlaced.name === "Collapsed Power Line" &&
+        !canPlaceAt(mouseVector.x, mouseVector.y)) ||
+      canPlaceAt(mouseVector.x, mouseVector.y)
+    ) {
       towerBeingPlaced.obj.isGhost = false;
       towerBeingPlaced.obj.position = mouseVector.copy();
       towers.push(towerBeingPlaced);
-      const towerBeingPlacedEntry = towerMenu
-        .filter(t => t.name === towerBeingPlaced.name)[0];
+      const towerBeingPlacedEntry = towerMenu.filter(
+        (t) => t.name === towerBeingPlaced.name
+      )[0];
       currency -= towerBeingPlacedEntry.cost;
       // Make placing more of the same tower more expensive
       towerBeingPlacedEntry.cost = Math.floor(towerBeingPlacedEntry.cost * 1.1);
@@ -885,10 +994,14 @@ export function mousePressed() {
   let somethingClicked = false;
 
   // Check for a click to the menu
-  if (mouseOnRect(tmenuX,
-    tmenuY,
-    tmenuX + Constants.towerMenuWidth,
-    tmenuY + Constants.towerMenuHeight)) {
+  if (
+    mouseOnRect(
+      tmenuX,
+      tmenuY,
+      tmenuX + Constants.towerMenuWidth,
+      tmenuY + Constants.towerMenuHeight
+    )
+  ) {
     somethingClicked = true;
     // Check if the close button was clicked
 
@@ -915,7 +1028,8 @@ export function mousePressed() {
   for (const towerType of towerMenu) {
     if (
       dist(mouseX, mouseY, towerType.menuPos.x, towerType.menuPos.y) <
-      towerType.menuSize / 2 && currency >= towerType.cost
+        towerType.menuSize / 2 &&
+      currency >= towerType.cost
     ) {
       towerBeingPlaced = towerType.create(towerType.name);
       towerBeingPlaced.obj = {

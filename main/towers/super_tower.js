@@ -1,5 +1,5 @@
-import { basicTowerProjectile } from "../projectiles/basic_tower_proj.js";
-import { cars, getBestCar, getNearestCar, projectiles } from "../sketch.js";
+import { superTowerProjectile } from "../projectiles/super_tower_proj.js";
+import { cars, getBestCar, getNearestCar, projectiles, superTowerSprite} from "../sketch.js";
 import { Tower } from "./tower.js";
 
 const allowTint = [100, 255, 100];
@@ -21,7 +21,7 @@ export const firingRange = 200;
  * @param {p5.Vector} target where the projectile is aimed at.
  */
 export function fire(pos, target) {
-  const proj = new basicTowerProjectile(pos, target);
+  const proj = new superTowerProjectile(pos, target);
   projectiles.push(proj);
 }
 
@@ -70,28 +70,23 @@ function tintColor(base, tint, n) {
  * @this Tower
  */
 export function draw() {
-  /** @type {number[]} */
-  let localBodyColor;
-  /** @type {number[]} */
-  let localTurretColor;
+ 
+  /** @type {p5.Vector} */
+  const target = this.obj.target ?? createVector(0, 0);
+  push();
   // Tint the colors
   if (this.obj.isGhost) {
     if (this.obj.canPlace) {
-      localBodyColor = tintColor(bodyColor, allowTint, 0.7);
-      localTurretColor = tintColor(turretColor, allowTint, 0.7);
+      tint("green");
     } else {
-      localBodyColor = tintColor(bodyColor, denyTint, 0.7);
-      localTurretColor = tintColor(turretColor, denyTint, 0.7);
+      tint("red");
     }
   } else {
-    localBodyColor = bodyColor;
-    localTurretColor = turretColor;
+    noTint();
   }
-  /** @type {p5.Vector} */
-  const target = this.obj.target ?? createVector(0, 0);
   stroke(0, 0, 0);
-  fill(...localBodyColor);
-  circle(this.obj.position.x, this.obj.position.y, bodyCircleSize);
+  // fill(...localBodyColor);
+  // circle(this.obj.position.x, this.obj.position.y, bodyCircleSize);
   // Point the turret at the mouse
   translate(this.obj.position.x, this.obj.position.y);
   rotate(
@@ -100,7 +95,9 @@ export function draw() {
       target.x - this.obj.position.x
     )
   );
-  fill(...localTurretColor);
-  rect(...bodyTurretSize);
-  resetMatrix();
+  imageMode(CENTER);
+  image(superTowerSprite, 0, 0, 50, 50);
+  // fill(...localTurretColor);
+  // rect(...bodyTurretSize);
+  pop();
 }

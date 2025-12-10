@@ -1,7 +1,7 @@
-const speed = 0.75;
+const speed = 2;
 
-export class basicTowerProjectile {
-  damage = 25;
+export class superTowerProjectile {
+  damage = 35;
 
   constructor(towerPos, target) {
     this.pos = towerPos.copy();
