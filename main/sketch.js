@@ -161,6 +161,9 @@ let placeImage2;
 let placeImage3;
 /** @type {p5.Image} */
 export let aircraftImage;
+/**@type {p5.Image} */
+export let speedLimitSign;
+let mainMenuImage;
 export let collapsedPowerLineSprite;
 export let speedCameraSprite;
 export let basicTowerSprite;
@@ -384,6 +387,8 @@ export function preload() {
   basicTowerSprite = loadImage("./assets/Cop_tower_basic.png");
   superTowerSprite = loadImage("./assets/super_tower.png");
   aircraftImage = loadImage("./assets/Aircraft_tower.png");
+  speedLimitSign = loadImage("./assets/Speed_limit_sign.png");
+  mainMenuImage = loadImage("./assets/Main_menu.png");
 }
 
 export function setup() {
@@ -449,10 +454,10 @@ export function draw() {
 
 export function menuDraw() {
   //main menu
-  background("tan");
+  image(mainMenuImage, 0, 0, width, height);
   stroke(51);
   strokeWeight(2);
-  fill("tan");
+  fill("orange");
   textAlign(CENTER, BASELINE);
   if (mainMenu) {
     //buttons
@@ -521,7 +526,7 @@ export function menuDraw() {
     rect(315, 350, 210, 65);
     textSize(16);
     textAlign(LEFT, TOP);
-    fill("black");
+    fill("white");
     strokeWeight(0);
     text(
       "In a pre-apocalypse version of New Jersey, it is your responsibility to make sure that the citizens of New Jersey are unable to enter New York. Buy different towers by dragging them from the menu on the right onto the map. When cars make it to the end of the road un-destroyed, your health will go down. If it reaches zero, you will lose the game! Finish the level by destroying all of the cars. And most importantly, have fun! Or else…",
