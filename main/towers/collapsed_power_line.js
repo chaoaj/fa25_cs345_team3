@@ -50,20 +50,17 @@ function tintColor(base, tint, n) {
  * @this Tower
  */
 export function draw() {
-  /** @type {number[]} */
-  let localPoleColor;
-
+  push();
   // Tint the colors
   if (this.obj.isGhost) {
     if (this.obj.canPlace) {
-      localPoleColor = tintColor(poleColor, allowTint, 0.7);
+      tint("green");
     } else {
-      localPoleColor = tintColor(poleColor, denyTint, 0.7);
+      tint("red");
     }
   } else {
-    localPoleColor = poleColor;
+    noTint();
   }
-  push();
   stroke(0, 0, 0);
   translate(this.obj.position.x, this.obj.position.y);
   rotate(-0.785);

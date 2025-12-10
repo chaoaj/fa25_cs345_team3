@@ -71,26 +71,20 @@ function tintColor(base, tint, n) {
  * @this Tower
  */
 export function draw() {
-  /** @type {number[]} */
-  let localBodyColor;
-  /** @type {number[]} */
-  let localTurretColor;
-  // Tint the colors
-  if (this.obj.isGhost) {
-    if (this.obj.canPlace) {
-      localBodyColor = tintColor(bodyColor, allowTint, 0.7);
-      localTurretColor = tintColor(turretColor, allowTint, 0.7);
-    } else {
-      localBodyColor = tintColor(bodyColor, denyTint, 0.7);
-      localTurretColor = tintColor(turretColor, denyTint, 0.7);
-    }
-  } else {
-    localBodyColor = bodyColor;
-    localTurretColor = turretColor;
-  }
+
   /** @type {p5.Vector} */
   const target = this.obj.target ?? createVector(0, 0);
   push();
+  // Tint the colors
+  if (this.obj.isGhost) {
+    if (this.obj.canPlace) {
+      tint("green");
+    } else {
+      tint("red");
+    }
+  } else {
+    noTint();
+  }
   stroke(0, 0, 0);
   // fill(...localBodyColor);
   // circle(this.obj.position.x, this.obj.position.y, bodyCircleSize);
