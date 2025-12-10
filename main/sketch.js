@@ -97,6 +97,7 @@ let placeImage2;
 let placeImage3;
 export let collapsedPowerLineSprite;
 export let speedCameraSprite;
+export let basicTowerSprite;
 
 // Tower menu coordinates
 /** @type {number} */
@@ -309,6 +310,7 @@ export function preload() {
   placeImage3 = loadImage("./assets/map3 redgreen.png");
   collapsedPowerLineSprite = loadImage("./assets/collapsed_power_line.png");
   speedCameraSprite = loadImage("./assets/speed_camera.png");
+  basicTowerSprite = loadImage("./assets/Cop_tower_basic.png");
 }
 
 export function setup() {

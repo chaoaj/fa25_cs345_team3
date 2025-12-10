@@ -1,5 +1,5 @@
 import { basicTowerProjectile } from "../projectiles/basic_tower_proj.js";
-import { cars, getBestCar, getNearestCar, projectiles } from "../sketch.js";
+import { cars, getBestCar, getNearestCar, projectiles, basicTowerSprite } from "../sketch.js";
 import { Tower } from "./tower.js";
 
 const allowTint = [100, 255, 100];
@@ -90,9 +90,10 @@ export function draw() {
   }
   /** @type {p5.Vector} */
   const target = this.obj.target ?? createVector(0, 0);
+  push();
   stroke(0, 0, 0);
-  fill(...localBodyColor);
-  circle(this.obj.position.x, this.obj.position.y, bodyCircleSize);
+  // fill(...localBodyColor);
+  // circle(this.obj.position.x, this.obj.position.y, bodyCircleSize);
   // Point the turret at the mouse
   translate(this.obj.position.x, this.obj.position.y);
   rotate(
@@ -101,7 +102,9 @@ export function draw() {
       target.x - this.obj.position.x
     )
   );
-  fill(...localTurretColor);
-  rect(...bodyTurretSize);
-  resetMatrix();
+  // fill(...localTurretColor);
+  // rect(...bodyTurretSize);
+  imageMode(CENTER);
+  image(basicTowerSprite, 0, 0, 50, 50);
+  pop();
 }
