@@ -382,7 +382,7 @@ export function preload() {
   newJerseyImage = loadImage("./assets/new_jersey.png");
   mapImage3 = loadImage("./assets/map3.png");
   placeImage3 = loadImage("./assets/map3 redgreen.png");
-  collapsedPowerLineSprite = loadImage("./assets/collapsed_power_line.png");
+  collapsedPowerLineSprite = loadImage("./assets/Collapsed_power_line.png");
   speedCameraSprite = loadImage("./assets/speed_camera.png");
   basicTowerSprite = loadImage("./assets/Cop_tower_basic.png");
   superTowerSprite = loadImage("./assets/super_tower.png");
