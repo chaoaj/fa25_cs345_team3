@@ -757,6 +757,12 @@ export function gameDraw() {
             tower.obj.position.y,
             CollapsedPowerLine.firingRange * 2
           );
+        case "Speed Enforcer":
+          circle(tower.obj.position.x, 
+            tower.obj.position.y, 
+            SpeedEnforcer.range * 2
+          );
+          break;
       }
     }
   }
