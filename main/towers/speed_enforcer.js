@@ -1,11 +1,11 @@
 import { cars, aircraftImage } from "../sketch.js";
 import * as Constants from "../constants.js";
 
-export const cost = 200;
+export const cost = 315;
 export const range = 150; // The radius around the sign
 const damage = 110; // High damage
 const cooldownTime = 360; //5 seconds at 60 fps
-const planeSpeed = 25; 
+const planeSpeed = 25;
 
 // Colors for the Sign
 export const signColor = [255, 255, 255];

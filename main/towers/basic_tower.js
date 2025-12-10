@@ -86,9 +86,6 @@ export function draw() {
     noTint();
   }
   stroke(0, 0, 0);
-  // fill(...localBodyColor);
-  // circle(this.obj.position.x, this.obj.position.y, bodyCircleSize);
-  // Point the turret at the mouse
   translate(this.obj.position.x, this.obj.position.y);
   rotate(
     Math.atan2(
@@ -96,8 +93,6 @@ export function draw() {
       target.x - this.obj.position.x
     )
   );
-  // fill(...localTurretColor);
-  // rect(...bodyTurretSize);
   imageMode(CENTER);
   image(basicTowerSprite, 0, 0, 50, 50);
   pop();
