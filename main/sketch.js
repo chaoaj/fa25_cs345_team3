@@ -2,6 +2,7 @@ import * as BasicTower from "./towers/basic_tower.js";
 import * as SuperTower from "./towers/super_tower.js";
 import * as SpeedCamera from "./towers/speed_camera.js";
 import * as CollapsedPowerLine from "./towers/collapsed_power_line.js";
+import * as SpeedEnforcer from "./towers/speed_enforcer.js";
 import { Tower } from "./towers/tower.js";
 import { Car } from "./cars/basic_car.js";
 import * as Constants from "./constants.js";
@@ -95,6 +96,8 @@ let placeImage;
 let placeImage1;
 let placeImage2;
 let placeImage3;
+/** @type {p5.Image} */
+export let aircraftImage;
 export let collapsedPowerLineSprite;
 export let speedCameraSprite;
 
@@ -278,6 +281,15 @@ const towerMenu = [
     // These will be populated by the draw() loop
     menuSize: 40,
     menuPos: null,
+  },
+  {
+    name: "Speed Enforcer",
+    baseCost: SpeedEnforcer.cost,
+    cost: SpeedEnforcer.cost,
+    create: (name) => new Tower(SpeedEnforcer.draw, SpeedEnforcer.update, name),
+    drawIcon: SpeedEnforcer.drawIcon,
+    menuSize: 40,
+    menuPos: null,
   }
 
   // --- EXAMPLE: Add a new tower here ---
@@ -309,17 +321,18 @@ export function preload() {
   placeImage3 = loadImage("./assets/map3 redgreen.png");
   collapsedPowerLineSprite = loadImage("./assets/collapsed_power_line.png");
   speedCameraSprite = loadImage("./assets/speed_camera.png");
+  aircraftImage = loadImage("./assets/Aircraft_tower.png");
 }
 
 export function setup() {
   const debugCheckbox = document.querySelector("#debug");
   DEBUG = debugCheckbox.checked;
-  debugCheckbox.oninput = function() {
+  debugCheckbox.oninput = function () {
     DEBUG = debugCheckbox.checked;
   };
   const pauseCheckbox = document.querySelector("#pause");
   paused = pauseCheckbox.checked;
-  pauseCheckbox.oninput = function() {
+  pauseCheckbox.oninput = function () {
     paused = pauseCheckbox.checked;
   }
   createCanvas(Constants.mapWidth + Constants.menuWidth, Constants.mapHeight);
@@ -385,9 +398,9 @@ export function menuDraw() {
     rect(315, 250, 210, 65); //credits
     rect(315, 350, 210, 65); //quit
     rect(Constants.mapWidth + Constants.menuWidth - 60 - 10,
-         Constants.mapHeight - 60 - 10,
-         60,
-         60); // help
+      Constants.mapHeight - 60 - 10,
+      60,
+      60); // help
 
     //title line
     line(260, 125, 580, 125);
@@ -440,7 +453,7 @@ export function menuDraw() {
   }
 
   if (help) {
-    image(newJerseyImage, 620, 100, 581/2, 968/2)
+    image(newJerseyImage, 620, 100, 581 / 2, 968 / 2)
     rect(315, 350, 210, 65);
     textSize(16);
     textAlign(LEFT, TOP);
@@ -624,9 +637,9 @@ export function gameDraw() {
     rect(
       tmenuX + 10,
       tmenuY +
-        Constants.towerMenuHeight -
-        Constants.towerMenuCloseButtonSize -
-        10,
+      Constants.towerMenuHeight -
+      Constants.towerMenuCloseButtonSize -
+      10,
       Constants.towerMenuCloseButtonSize,
       Constants.towerMenuCloseButtonSize
     );
@@ -648,17 +661,21 @@ export function gameDraw() {
       stroke(0, 0, 0, 0);
       fill(0, 255, 0, 100);
       switch (tower.name) {
-      case "Speed Camera":
-        circle(tower.obj.position.x, tower.obj.position.y, SpeedCamera.firingRange * 2);
-        break;
-      case "Basic Tower":
-        circle(tower.obj.position.x, tower.obj.position.y, BasicTower.firingRange * 2);
-        break;
-      case "Super Tower":
-        circle(tower.obj.position.x, tower.obj.position.y, SuperTower.firingRange * 2);
-        break;
-      case "Collapsed Power Line":
-        circle(tower.obj.position.x, tower.obj.position.y, CollapsedPowerLine.firingRange * 2);
+        case "Speed Camera":
+          circle(tower.obj.position.x, tower.obj.position.y, SpeedCamera.firingRange * 2);
+          break;
+        case "Basic Tower":
+          circle(tower.obj.position.x, tower.obj.position.y, BasicTower.firingRange * 2);
+          break;
+        case "Super Tower":
+          circle(tower.obj.position.x, tower.obj.position.y, SuperTower.firingRange * 2);
+          break;
+        case "Collapsed Power Line":
+          circle(tower.obj.position.x, tower.obj.position.y, CollapsedPowerLine.firingRange * 2);
+          break;
+        case "Speed Enforcer":
+          circle(tower.obj.position.x, tower.obj.position.y, SpeedEnforcer.range * 2);
+          break;
       }
     }
   }
@@ -678,7 +695,7 @@ export function gameDraw() {
     stroke(51);
     strokeWeight(2);
     fill(255, 255, 255, 50);
-    rect(10, Constants.mapHeight -65 - 10, 390, 65);
+    rect(10, Constants.mapHeight - 65 - 10, 390, 65);
     fill(255);
     textSize(40);
     textAlign(LEFT, BOTTOM);
@@ -696,7 +713,7 @@ export function gameDraw() {
     stroke(51);
     strokeWeight(2);
     fill(255, 255, 255, 50);
-    rect(10, Constants.mapHeight -65 - 10, 390, 65);
+    rect(10, Constants.mapHeight - 65 - 10, 390, 65);
     fill(255);
     textSize(40);
     textAlign(LEFT, BOTTOM);
@@ -737,10 +754,10 @@ export function getBestCar(pos, range) {
     }
     const distanceToNextWaypoint = p5.Vector.sub(car.path[car.targetWaypointIndex], car.pos).mag();
     if ((selectedCar == null)
-        || car.targetWaypointIndex > furthestWaypointIndex
-        || (car.targetWaypointIndex == furthestWaypointIndex
-            && distanceToNextWaypoint
-            < furthestDistanceToNextWaypoint)) {
+      || car.targetWaypointIndex > furthestWaypointIndex
+      || (car.targetWaypointIndex == furthestWaypointIndex
+        && distanceToNextWaypoint
+        < furthestDistanceToNextWaypoint)) {
       selectedCar = car;
       furthestWaypointIndex = car.targetWaypointIndex;
       furthestDistanceToNextWaypoint = distanceToNextWaypoint;
@@ -759,7 +776,7 @@ export function mousePressed() {
     return;
   }
   if (paused && health <= 0) {
-    if (mouseOnRect(10, Constants.mapHeight - 65 -10, 10 + 390, Constants.mapHeight - 10)) {
+    if (mouseOnRect(10, Constants.mapHeight - 65 - 10, 10 + 390, Constants.mapHeight - 10)) {
       reset();
     }
     return;
@@ -793,9 +810,9 @@ export function mousePressed() {
 
       // help
       if (mouseOnRect(Constants.mapWidth + Constants.menuWidth - 60 - 10,
-                      Constants.mapHeight - 60 - 10,
-                      Constants.mapWidth + Constants.menuWidth - 10,
-                      Constants.mapHeight - 10)) {
+        Constants.mapHeight - 60 - 10,
+        Constants.mapWidth + Constants.menuWidth - 10,
+        Constants.mapHeight - 10)) {
         mainMenu = false;
         help = true;
       }
@@ -847,12 +864,12 @@ export function mousePressed() {
   // place the tower
   if (towerBeingPlaced) {
     if ((towerBeingPlaced.name === "Collapsed Power Line" && !canPlaceAt(mouseVector.x, mouseVector.y))
-        || canPlaceAt(mouseVector.x, mouseVector.y)) {
+      || canPlaceAt(mouseVector.x, mouseVector.y)) {
       towerBeingPlaced.obj.isGhost = false;
       towerBeingPlaced.obj.position = mouseVector.copy();
       towers.push(towerBeingPlaced);
       const towerBeingPlacedEntry = towerMenu
-            .filter(t => t.name === towerBeingPlaced.name)[0];
+        .filter(t => t.name === towerBeingPlaced.name)[0];
       currency -= towerBeingPlacedEntry.cost;
       // Make placing more of the same tower more expensive
       towerBeingPlacedEntry.cost = Math.floor(towerBeingPlacedEntry.cost * 1.1);
@@ -869,9 +886,9 @@ export function mousePressed() {
 
   // Check for a click to the menu
   if (mouseOnRect(tmenuX,
-                  tmenuY,
-                  tmenuX + Constants.towerMenuWidth,
-                  tmenuY + Constants.towerMenuHeight)) {
+    tmenuY,
+    tmenuX + Constants.towerMenuWidth,
+    tmenuY + Constants.towerMenuHeight)) {
     somethingClicked = true;
     // Check if the close button was clicked
 
@@ -880,10 +897,10 @@ export function mousePressed() {
     const beginX = tmenuX + 10;
     const endX = beginX + Constants.towerMenuCloseButtonSize;
     const beginY =
-          tmenuY +
-          Constants.towerMenuHeight -
-          Constants.towerMenuCloseButtonSize -
-          10;
+      tmenuY +
+      Constants.towerMenuHeight -
+      Constants.towerMenuCloseButtonSize -
+      10;
     const endY = beginY + Constants.towerMenuCloseButtonSize;
     if (mouseOnRect(beginX, beginY, endX, endY)) {
       // Jankily remove the tower
@@ -898,7 +915,7 @@ export function mousePressed() {
   for (const towerType of towerMenu) {
     if (
       dist(mouseX, mouseY, towerType.menuPos.x, towerType.menuPos.y) <
-        towerType.menuSize / 2 && currency >= towerType.cost
+      towerType.menuSize / 2 && currency >= towerType.cost
     ) {
       towerBeingPlaced = towerType.create(towerType.name);
       towerBeingPlaced.obj = {
