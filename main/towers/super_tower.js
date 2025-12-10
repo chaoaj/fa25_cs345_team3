@@ -70,9 +70,10 @@ function tintColor(base, tint, n) {
  * @this Tower
  */
 export function draw() {
- 
+
   /** @type {p5.Vector} */
   const target = this.obj.target ?? createVector(0, 0);
+  
   push();
   // Tint the colors
   if (this.obj.isGhost) {
@@ -85,8 +86,6 @@ export function draw() {
     noTint();
   }
   stroke(0, 0, 0);
-  // fill(...localBodyColor);
-  // circle(this.obj.position.x, this.obj.position.y, bodyCircleSize);
   // Point the turret at the mouse
   translate(this.obj.position.x, this.obj.position.y);
   rotate(
@@ -97,7 +96,5 @@ export function draw() {
   );
   imageMode(CENTER);
   image(superTowerSprite, 0, 0, 50, 50);
-  // fill(...localTurretColor);
-  // rect(...bodyTurretSize);
   pop();
 }
